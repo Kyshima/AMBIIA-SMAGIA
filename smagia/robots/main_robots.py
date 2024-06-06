@@ -1,9 +1,14 @@
 from robots import RobotAgent
 import spade
 
+#robot1@jabbers.one robot1
+#robot2@jabbers.one robot2
+#robot3@jabbers.one robot3
+#robot4@jabbers.one robot4
+
 async def main():
-    jid="testesmagia@jabbers.one"
-    password="password"
+    jid="robot1@jabbers.one"
+    password="robot1"
     agent = RobotAgent(jid, password)
     
     agent.set("receiver", "receiver@jabbers.one")
@@ -11,11 +16,13 @@ async def main():
     agent.set("increment", {"x": 1, "y": 1})
     agent.set("id", "robot_1")
 
-    future = agent.start()
-    future.result()
-    print("RobotAgent started!")
+    agent.start()
+    print("Robot Agent started!")
+    agent.web.start(hostname="127.0.0.1", port="1002")
 
-    import asyncio
-    asyncio.run(asyncio.sleep(10))
+    await spade.wait_until_finished(agent)
+    await agent.stop()
+    print("Robot Agent finished")
 
-    agent.stop()
+if __name__ == "__main__":
+        spade.run(main())

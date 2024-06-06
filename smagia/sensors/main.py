@@ -1,5 +1,22 @@
-from smagia.sensors.sensors import PeriodicSensorAgent
+from sensors import PeriodicSensorAgent
 import spade
+
+#sensor_humidity1@jabbers.one sensor_humidity1
+#sensor_humidity2@jabbers.one sensor_humidity2
+#sensor_humidity3@jabbers.one sensor_humidity3
+#sensor_humidity4@jabbers.one sensor_humidity4
+#sensor_humidity5@jabbers.one sensor_humidity5
+#sensor_humidity6@jabbers.one sensor_humidity6
+#sensor_humidity7@jabbers.one sensor_humidity7
+#sensor_humidity8@jabbers.one sensor_humidity8
+#sensor_humidity9@jabbers.one sensor_humidity9
+#sensor_humidity10@jabbers.one sensor_humidity10
+#sensor_humidity11@jabbers.one sensor_humidity11
+#sensor_humidity12@jabbers.one sensor_humidity12
+#sensor_humidity13@jabbers.one sensor_humidity13
+#sensor_humidity14@jabbers.one sensor_humidity14
+#sensor_humidity15@jabbers.one sensor_humidity15
+#sensor_humidity16@jabbers.one sensor_humidity16
 
 async def main():
 
@@ -16,8 +33,7 @@ async def main():
 
     await spade.wait_until_finished(sensors[0])
     await sensors[0].stop()
-    print("Agents finished")
-
+    print("Sensors finished")
 
 if __name__ == "__main__":
     spade.run(main())

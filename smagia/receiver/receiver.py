@@ -19,21 +19,3 @@ class ReceiverAgent(Agent):
         print("ReceiverAgent started")
         b = self.ReceivePositionBehaviour()
         self.add_behaviour(b)
-
-if __name__ == "__main__":
-    import asyncio
-
-    async def main():
-        jid = "receiver@jabbers.one"
-        password = "receiver"
-        agent = ReceiverAgent(jid, password)
-
-        await agent.start()
-
-        print("ReceiverAgent started!")
-
-        await asyncio.sleep(100)
-
-        await agent.stop()
-
-    asyncio.run(main())
