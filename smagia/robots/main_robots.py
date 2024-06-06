@@ -16,7 +16,7 @@ async def main():
     agent.set("increment", {"x": 1, "y": 1})
     agent.set("id", "robot_1")
 
-    agent.start()
+    await agent.start()
     print("Robot Agent started!")
     agent.web.start(hostname="127.0.0.1", port="1002")
 

@@ -8,7 +8,7 @@ async def main():
     password = "receiver"
     receiver = ReceiverAgent(jid, password)
 
-    receiver.start()
+    await receiver.start()
     print("Receiver Agent started!")
     receiver.web.start(hostname="127.0.0.1", port="1001")
 
