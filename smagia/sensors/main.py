@@ -1,4 +1,4 @@
-from sensors import PeriodicSensorAgent
+from smagia.sensors.sensors import PeriodicSensorAgent
 import spade
 
 async def main():
