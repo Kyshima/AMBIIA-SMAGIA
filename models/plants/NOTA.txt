@@ -1,0 +1,6 @@
+no model.sdf trocar a linha:
+<uri>file:///home/kyshima/.gazebo/models/plants/meshes/PotPlant.dae</uri>
+para a vossa path correta
+
+esta pasta está em:
+home\USER\.gazebo\models
