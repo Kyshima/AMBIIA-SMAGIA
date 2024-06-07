@@ -1,0 +1,50 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <world name="default">
+    <include>
+      <uri>model://ground_plane</uri>
+    </include>
+    <include>
+      <uri>model://sun</uri>
+    </include>
+
+    <!-- Include the robot model -->
+    <include>
+      <uri>model://robot</uri>
+      <pose>0 0 0 0 0 0</pose> <!-- Adjust pose as needed -->
+    </include>
+
+    <!-- Include water sensor models with unique names -->
+    <include>
+      <uri>model://water_sensor</uri>
+      <name>water_sensor_1</name>
+      <pose>1 1 0.25 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://water_sensor</uri>
+      <name>water_sensor_2</name>
+      <pose>2 1 0.25 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://water_sensor</uri>
+      <name>water_sensor_3</name>
+      <pose>3 1 0.25 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://water_sensor</uri>
+      <name>water_sensor_4</name>
+      <pose>1 2 0.25 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://water_sensor</uri>
+      <name>water_sensor_5</name>
+      <pose>2 2 0.25 0 0 0</pose>
+    </include>
+    <include>
+      <uri>model://water_sensor</uri>
+      <name>water_sensor_6</name>
+      <pose>3 2 0.25 0 0 0</pose>
+    </include>
+
+  </world>
+</sdf>
