@@ -133,4 +133,18 @@
     <origin xyz="-0.4 -0.3 -0.1" rpy="0 1.5708 0"/>
     <axis xyz="0 0 1"/>
   </joint>
+
+  <gazebo>
+    <plugin name="gazebo_ros_diff_drive" filename="libgazebo_ros_diff_drive.so">
+      <ros>
+        <namespace>/</namespace>
+        <remapping>cmd_vel:=cmd_vel</remapping>
+      </ros>
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <left_joint>rear_left_joint</left_joint>
+      <right_joint>rear_right_joint</right_joint>
+    </plugin>
+  </gazebo>
 </robot>
