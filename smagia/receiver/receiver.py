@@ -5,7 +5,7 @@ from spade.message import Message
 
 from utils.utils import get_max_potency_jid, jid_to_string
 
-log = False
+log = True
 
 
 def log_controller(msg):

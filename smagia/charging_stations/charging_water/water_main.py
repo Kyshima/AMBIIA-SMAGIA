@@ -10,7 +10,7 @@ async def main():
     await water_station_agent.start(auto_register=True)
     print("Water Station Agent Started")
 
-    water_station_agent.web.start(hostname="127.0.0.1", port="1005")
+    water_station_agent.web.start(hostname="127.0.0.1", port="1007")
 
     await spade.wait_until_finished(water_station_agent)
     await water_station_agent.stop()

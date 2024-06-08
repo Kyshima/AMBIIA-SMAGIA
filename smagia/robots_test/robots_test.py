@@ -30,5 +30,4 @@ class RobotAgent(Agent):
                         print("Water recharge denied: The station is already refilling")
             else:
                 print("Water capacity is already at 100%. Stopping recharge.")
-                
-            await self.agent.stop()
+                await self.agent.stop()

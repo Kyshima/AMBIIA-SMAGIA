@@ -1,6 +1,7 @@
 from sensors import HumiditySensorAgent
 import spade
 
+
 #sensor_humidity1@jabbers.one sensor_humidity1
 #sensor_humidity2@jabbers.one sensor_humidity2
 #sensor_humidity3@jabbers.one sensor_humidity3
@@ -19,21 +20,21 @@ import spade
 #sensor_humidity16@jabbers.one sensor_humidity16
 
 async def main():
+    sensor_humidity1 = HumiditySensorAgent("sensor_humidity1@jabbers.one", "sensor_humidity1", 100, 5, "sensor1", 3, 7)
+    sensor_humidity1.set("receiver_jid", "receiver@jabbers.one")
+    await sensor_humidity1.start(auto_register=True)
 
+    sensor_humidity2 = HumiditySensorAgent("sensor_humidity2@jabbers.one", "sensor_humidity2", 100, 5, "sensor2", 4, 7)
+    sensor_humidity2.set("receiver_jid", "receiver@jabbers.one")
+    await sensor_humidity2.start(auto_register=True)
 
-    sensor = HumiditySensorAgent(jid="sensor_humidity1@jabbers.one", password="sensor_humidity1")
-    sensor.set("id", "sensor")
-    sensor.set("humidity", 100)
-    sensor.set("decrease_amount", 0.1)
-    await sensor.start(auto_register=True)
-    print("Sender started")
-    sensor.web.start(hostname="127.0.0.1", port="10000")
+    sensor_humidity1.web.start(hostname="127.0.0.1", port="10000")
+    sensor_humidity2.web.start(hostname="127.0.0.1", port="10001")
 
+    await spade.wait_until_finished(sensor_humidity1)
+    await spade.wait_until_finished(sensor_humidity2)
+    print("Receiver Agent finished")
 
-    await spade.wait_until_finished(sensor)
-    await sensor.stop()
-    print("Sensors finished")
 
 if __name__ == "__main__":
     spade.run(main())
-
