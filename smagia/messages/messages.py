@@ -3,6 +3,7 @@ from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 import asyncio
 
+#Robot Agents
 class RobotAgent(agent.Agent):
     async def setup(self):
 
@@ -22,7 +23,7 @@ class RobotAgent(agent.Agent):
         water_recharge_request.set_metadata("message_type", "Water Recharge Request")
         await self.send(water_recharge_request)
 
-
+#Sensor Agents
 class SensorAgent(agent.Agent):
     async def setup(self):
         print(f"Sensor Agent {self.jid} is running")
@@ -37,6 +38,57 @@ class SensorAgent(agent.Agent):
             await self.send(plant_watering_request)
 
 
+#Energy Station Agent
+class EnergyStationAgent(agent.Agent):
+    async def setup(self):
+        print(f"Energy Station Agent {self.jid} is running")
+        self.add_behaviour(self.HandleEnergyRequests())
+
+    class HandleEnergyRequests(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive(timeout=10)
+            if msg:
+                if msg.get_metadata("message_type") == "Energy Recharge Request":
+                    response = Message(to=msg.sender)
+                    response.set_metadata("performative", "accept")
+                    response.set_metadata("message_type", "Energy Recharge Response")
+
+                    if not self.agent.isAlreadyRefilling:
+                        # Accept the refill request
+                        self.agent.isAlreadyRefilling = True
+                        response.body = "Energy recharge accepted"
+                    else:
+                        # Deny the refill request
+                        response.body = "Energy recharge denied: The station is already refilling"
+                    
+                    await self.send(response)
+
+
+#Water Station Agent
+class WaterStationAgent(agent.Agent):
+    async def setup(self):
+        print(f"Water Station Agent {self.jid} is running")
+        self.add_behaviour(self.HandleWaterRequests())
+
+    class HandleWaterRequests(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive(timeout=10)
+            if msg:
+                if msg.get_metadata("message_type") == "Water Recharge Request":
+                    response = Message(to=msg.sender)
+                    response.set_metadata("performative", "accept")
+                    response.set_metadata("message_type", "Water Recharge Response")
+
+                    if not self.agent.isAlreadyRefilling:
+                        # Accept the refill request
+                        self.agent.isAlreadyRefilling = True
+                        response.body = "Water recharge accepted"
+                    else:
+                        # Deny the refill request
+                        response.body = "Water recharge denied: The station is already refilling"
+                    
+                    await self.send(response)
+                    
 class CoordinatorAgent(agent.Agent):
     
     async def setup(self):    
