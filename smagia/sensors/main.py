@@ -1,4 +1,4 @@
-from sensors import PeriodicSensorAgent
+from sensors import HumiditySensorAgent
 import spade
 
 #sensor_humidity1@jabbers.one sensor_humidity1
@@ -20,19 +20,18 @@ import spade
 
 async def main():
 
-    sensors = []
-    for i in range(16):
-        sensors.append(PeriodicSensorAgent(jid="testesmagia@jabbers.one", password="password"))
-        sensors[i].set("id", "sensor" + str(i))
-        sensors[i].set("humidity", 100)
-        sensors[i].set("decrease_amount", 0.1 * i)
-        await sensors[i].start(auto_register=True)
-        print("Sender started")
-        sensors[i].web.start(hostname="127.0.0.1", port="10000")
+
+    sensor = HumiditySensorAgent(jid="sensor_humidity1@jabbers.one", password="sensor_humidity1")
+    sensor.set("id", "sensor")
+    sensor.set("humidity", 100)
+    sensor.set("decrease_amount", 0.1)
+    await sensor.start(auto_register=True)
+    print("Sender started")
+    sensor.web.start(hostname="127.0.0.1", port="10000")
 
 
-    await spade.wait_until_finished(sensors[0])
-    await sensors[0].stop()
+    await spade.wait_until_finished(sensor)
+    await sensor.stop()
     print("Sensors finished")
 
 if __name__ == "__main__":
