@@ -13,8 +13,10 @@ class RobotAgent(Agent):
 
         elif self.energy_capacity > 30 and self.water_capacity<=30:
             self.add_behaviour(self.WaterRefillBehaviour())'''
-
+        
         self.add_behaviour(self.WaterRefillBehaviour())
+
+
     class WaterRefillBehaviour(CyclicBehaviour):
         async def run(self):
             if self.agent.water_capacity < 100:

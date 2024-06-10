@@ -6,7 +6,6 @@ async def main():
     password = "water_station"
     water_station_agent = WaterStationAgent(jid, password)
     
-    
     await water_station_agent.start(auto_register=True)
     print("Water Station Agent Started")
 
@@ -18,4 +17,3 @@ async def main():
 
 if __name__ == "__main__":
     spade.run(main())
-
