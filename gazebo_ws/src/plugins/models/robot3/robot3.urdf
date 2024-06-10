@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<robot name="robot">
+<robot name="robot3">
   <!-- Base Link -->
   <link name="base_link">
     <visual>
@@ -135,7 +135,7 @@
   </joint>
 
   <gazebo>
-    <plugin name="gazebo_ros_diff_drive" filename="libgazebo_ros_diff_drive.so">
+    <plugin name="gazebo_ros_diff_drive3" filename="libgazebo_ros_diff_drive.so">
       <ros>
         <namespace>/</namespace>
         <remapping>cmd_vel:=cmd_vel</remapping>
