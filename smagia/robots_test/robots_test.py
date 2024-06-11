@@ -19,6 +19,7 @@ class RobotAgent(Agent):
     class WaterRefillBehaviour(PeriodicBehaviour):
         async def run(self):
             if self.agent.water_capacity < 100:
+                print("asd")
                 # Send water refill request
                 water_refill_request = Message(to="water_station@jabbers.one")
                 water_refill_request.body = str(self.agent.water_capacity)

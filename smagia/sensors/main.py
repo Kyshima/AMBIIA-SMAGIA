@@ -1,4 +1,4 @@
-from sensors import HumiditySensorAgent
+from sensors_network import HumiditySensorAgent
 import spade
 
 #sensor_humidity1@jabbers.one sensor_humidity1
@@ -19,21 +19,18 @@ import spade
 #sensor_humidity16@jabbers.one sensor_humidity16
 
 async def main():
+    robot_network = ['robot1@jabbers.one', 'robot2@jabbers.one', 'robot3@jabbers.one', 'robot4@jabbers.one']
 
+    sensor_humidity1 = HumiditySensorAgent("sensor_humidity1@jabbers.one", "sensor_humidity1", 100, 5, "sensor1", 3, 7, robot_network)
+    sensor_humidity1.set("receiver_jid", "receiver@jabbers.one")
+    await sensor_humidity1.start(auto_register=True)
 
-    sensor = HumiditySensorAgent(jid="sensor_humidity1@jabbers.one", password="sensor_humidity1")
-    sensor.set("id", "sensor")
-    sensor.set("humidity", 100)
-    sensor.set("decrease_amount", 0.1)
-    await sensor.start(auto_register=True)
-    print("Sender started")
-    sensor.web.start(hostname="127.0.0.1", port="10000")
+    sensor_humidity1.web.start(hostname="127.0.0.1", port="10000")
 
+    await spade.wait_until_finished(sensor_humidity1)
+    await sensor_humidity1.stop()
+    print("Receiver Agent finished")
 
-    await spade.wait_until_finished(sensor)
-    await sensor.stop()
-    print("Sensors finished")
 
 if __name__ == "__main__":
     spade.run(main())
-
