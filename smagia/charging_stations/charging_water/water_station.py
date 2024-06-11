@@ -16,6 +16,8 @@ class WaterStationAgent(Agent):
             msg = await self.receive(timeout=10)
             if msg:
                 if msg.get_metadata("message_type") == "Water Refill Request":
+                    print("sou eu")
+                    print(self.agent.refill_queue)
                     water_capacity = float(msg.body)
                     robot_jid = jid_to_string(msg.sender)
                         
@@ -31,11 +33,16 @@ class WaterStationAgent(Agent):
                     # Process the next refill request if not already refilling
                     if not self.agent.isAlreadyRefilling:
                         self.agent.add_behaviour(self.agent.ProcessNextRefillRequest())
+
     class ProcessNextRefillRequest(OneShotBehaviour):
         async def run(self):
             # If there are elements in the queue
             if self.agent.refill_queue:
+                print("Olha eu antes")
+                print(self.agent.refill_queue)
                 water_capacity, robot_jid = heapq.heappop(self.agent.refill_queue)
+                print("Olha eu depois")
+                print(self.agent.refill_queue)
                 response = Message(to=robot_jid)
                 response.set_metadata("performative", "proposal")
                 response.set_metadata("message_type", "Water Refill Response")
@@ -72,7 +79,11 @@ class WaterStationAgent(Agent):
                 print(f"Sent update to {self.robot_jid}: water level {water_level}%")
             
             self.agent.isAlreadyRefilling = False
-            self.agent.add_behaviour(self.agent.ProcessNextRefillRequest())
+
+            print("olha eu simplesmente")
+            print(self.agent.refill_queue)
+            if self.agent.refill_queue:
+                self.agent.add_behaviour(self.agent.ProcessNextRefillRequest())
 
 def jid_to_string(jid):
     if jid.resource:
