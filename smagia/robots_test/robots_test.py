@@ -1,6 +1,6 @@
 from spade.agent import Agent
 from spade.message import Message
-from spade.behaviour import CyclicBehaviour
+from spade.behaviour import CyclicBehaviour, PeriodicBehaviour
 
 class RobotAgent(Agent):
 
@@ -14,10 +14,12 @@ class RobotAgent(Agent):
         elif self.energy_capacity > 30 and self.water_capacity<=30:
             self.add_behaviour(self.WaterRefillBehaviour())'''
 
-        self.add_behaviour(self.WaterRefillBehaviour())
-    class WaterRefillBehaviour(CyclicBehaviour):
+        self.add_behaviour(self.WaterRefillBehaviour(period=2))
+        
+    class WaterRefillBehaviour(PeriodicBehaviour):
         async def run(self):
             if self.agent.water_capacity < 100:
+                print("asd")
                 # Send water refill request
                 water_refill_request = Message(to="water_station@jabbers.one")
                 water_refill_request.body = str(self.agent.water_capacity)
