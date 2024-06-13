@@ -1,10 +1,10 @@
-from water_station import WaterStationAgent
+from water_station_edu import WaterStationAgent
 import spade
 
 async def main():
     jid = "water_station@jabbers.one"
     password = "water_station"
-    water_station_agent = WaterStationAgent(jid, password)
+    water_station_agent = WaterStationAgent(jid, password, 10, 5, 5)
     
     await water_station_agent.start(auto_register=True)
     print("Water Station Agent Started")
