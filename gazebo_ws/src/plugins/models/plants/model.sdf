@@ -1,13 +1,13 @@
 <?xml version="1.0" ?>
 <sdf version="1.6">
-  <model name="charger">
+  <model name="plant">
     <static>true</static>
     <link name="link">
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/charger2/charger.dae</uri>
-	    <scale>1 1 1</scale>
+            <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+	    <scale>0.2 0.2 0.2</scale>
           </mesh>
         </geometry>
       </visual>
