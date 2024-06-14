@@ -7,12 +7,12 @@ import math
 class RobotMover(Node):
     def __init__(self):
         super().__init__('robot_mover')
-        self.publisher_ = self.create_publisher(Twist, 'cmd_vel', 10)
-        self.subscription = self.create_subscription(Odometry, 'odom', self.odom_callback, 10)
-        self.target_x = 2.0  # Target x position
-        self.target_y = -2.0  # Target y position
-        self.current_x = -8.627601
-        self.current_y = 2.968623
+        self.publisher_ = self.create_publisher(Twist, '/robot1/cmd_vel', 10)
+        self.subscription = self.create_subscription(Odometry, '/robot1/odom', self.odom_callback, 10)
+        self.target_x = 2.5  # Target x position
+        self.target_y = -4.0  # Target y position
+        self.current_x = 0.0
+        self.current_y = 0.0
         self.current_yaw = 0.0
         self.state = 'rotate'
         self.timer_period = 0.1  # seconds
