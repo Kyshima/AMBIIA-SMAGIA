@@ -159,7 +159,8 @@ class RobotAgent(Agent):
                     new_water = response["new_water"]
                     self.agent.water += new_water
 
-                    print(f"Refilling. Water at {self.agent.water}")
+                    if self.agent.water < self.agent.max_water:
+                        print(f"Refilling. Water at {self.agent.water}")
 
                     if (self.agent.water >= self.agent.max_water):
                         self.agent.water = self.agent.max_water
@@ -180,6 +181,47 @@ class RobotAgent(Agent):
                 case "Water Refill Queue":
                     self.agent.task = "waiting_refill"
                     print(msg.body)
+
+        async def handle_energy_recharge_task(self, response, msg):
+
+            match msg.get_metadata("type"):
+
+                case "Energy Recharge Response":
+                    self.agent.task_x = response["energy_station_x"]
+                    self.agent.task_y = response["energy_station_y"]
+                    self.agent.task = "going_recharge"
+                    self.agent.taskSender = jid_to_string(msg.sender)
+                    print(
+                        f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
+
+                case "Energy Recharge":
+                    self.agent.task = "recharging_energy"
+                    new_energy = response["new_energy"]
+                    self.agent.energy += new_energy
+
+                    if self.agent.energy < self.agent.max_energy:
+                        print(f"Recharging. Energy at {self.agent.energy}")
+
+                    if (self.agent.energy >= self.agent.max_energy):
+                        self.agent.energy = self.agent.max_energy
+                        self.agent.task = "resting"
+                        self.agent.taskSender = ""
+                        self.agent.task_x = self.agent.base_x
+                        self.agent.task_y = self.agent.base_x
+
+                        energy_station = self.agent.energy_station_jid
+                        msg = Message(to=energy_station)
+                        msg.set_metadata("performative", "inform")
+                        msg.set_metadata("type", "Energy Recharge Finished")
+                        msg.set_metadata("agent", "Energy Station")
+
+                        await self.send(msg)
+                        print(f"Energy Recharge Complete! Now at max energy capacity of {self.agent.max_energy}")
+
+                case "Energy Recharge Queue":
+                    self.agent.task = "waiting_recharge"
+                    print(msg.body)
+
 
     class MovementBehaviour(PeriodicBehaviour):
         async def run(self):
@@ -236,6 +278,18 @@ class RobotAgent(Agent):
                 })
 
                 await self.send(msg)
+    class RechargeEnergyBehaviour(OneShotBehaviour):
+        async def run(self):
+            if (self.agent.task == "resting" and self.agent.energy < 100):
+                energy_station = self.agent.energy_station_jid
+                msg = Message(to=energy_station)
+                msg.set_metadata("performative", "request")
+                msg.set_metadata("type", "Energy Recharge Request")
+                msg.body = json.dumps({
+                    "energy": self.agent.energy
+                })
+
+                await self.send(msg)
 
     class UpdatePosBehaviour(PeriodicBehaviour):
         async def run(self):
@@ -245,6 +299,21 @@ class RobotAgent(Agent):
                 msg.set_metadata("performative", "inform")
                 msg.set_metadata("type", "Robot In Station")
                 msg.set_metadata("agent", "Water Station")
+
+                msg.body = json.dumps({
+
+                    "robot_x": self.agent.x,
+                    "robot_y": self.agent.y
+
+                })
+            
+            elif(self.agent.task == "going_recharge"):
+                
+                energy_station = self.agent.energy_station_jid
+                msg = Message(to=energy_station)
+                msg.set_metadata("performative", "inform")
+                msg.set_metadata("type", "Robot In Station")
+                msg.set_metadata("agent", "Energy Station")
 
                 msg.body = json.dumps({
 

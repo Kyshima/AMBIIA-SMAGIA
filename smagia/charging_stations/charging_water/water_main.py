@@ -4,7 +4,10 @@ import spade
 async def main():
     jid = "water_station@jabbers.one"
     password = "water_station"
-    water_station_agent = WaterStationAgent(jid, password, 100, 0, 0)
+    refill_water_quantity = 100
+    water_station_posx = 5
+    water_station_posy = 5
+    water_station_agent = WaterStationAgent(jid, password, refill_water_quantity, water_station_posx, water_station_posy)
     
     await water_station_agent.start(auto_register=True)
     print("Water Station Agent Started")

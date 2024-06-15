@@ -1,7 +1,7 @@
 import datetime
 import json
 from spade.agent import Agent
-from spade.behaviour import PeriodicBehaviour, CyclicBehaviour, OneShotBehaviour
+from spade.behaviour import PeriodicBehaviour, CyclicBehaviour
 from spade.message import Message
 from datetime import datetime
 
@@ -43,11 +43,11 @@ class WaterStationAgent(Agent):
                             "waiting_time" : datetime.now()
                         }
 
-                        print(self.agent.robots_list)
-                        
+                        print(f"I got a water refill request. This is now my queue {self.agent.robots_list.keys()}")
+      
                     case "Water Refill Finished":
                         sender = jid_to_string(msg.sender)
-                        print("The robot " + self.agent.robot_jid + " completed it's recharge")
+                        print("The robot " + self.agent.robot_jid + " completed it's water refill")
                         self.agent.robot_jid = None
                         self.agent.robots_list.pop(sender)
                         self.agent.in_pos = False
@@ -57,7 +57,6 @@ class WaterStationAgent(Agent):
                         pos_x = response['robot_x']
                         pos_y = response['robot_y']
 
-               
                         if(pos_x == self.agent.station_x and pos_y == self.agent.station_y):
           
                             self.agent.in_pos = True
