@@ -4,7 +4,13 @@ from spade.agent import Agent
 from spade.behaviour import PeriodicBehaviour, CyclicBehaviour, OneShotBehaviour
 from spade.message import Message
 
-from utils.utils import jid_to_string, get_max_potency_jid
+#from utils.utils import jid_to_string, get_max_potency_jid
+
+def jid_to_string(jid):
+    if jid.resource:
+        return f"{jid.localpart}@{jid.domain}/{jid.resource}"
+    else:
+        return f"{jid.localpart}@{jid.domain}"
 
 log = True
 
@@ -65,11 +71,11 @@ class RobotAgent(Agent):
                     case "sensor":
                         await self.handle_sensor_task(response, msg)
                     
-                    case "water_station":
-                        await self.handle_water_task(response,msg)
+                    case "Water Station":
+                        await self.handle_water_refill_task(response,msg)
                       
-                    case "energy_station":
-                        await self.handle_energy_task(response,msg)
+                    case "Energy Station":
+                        await self.handle_energy_recharge_task(response,msg)
 
                     case _:
                         log_robots("Message sent by unknown agent")
@@ -130,24 +136,44 @@ class RobotAgent(Agent):
                 case _:
                     log_robots("Unknown type from sensor agent")
 
-        async def handle_water_task(self, response, msg):
+        async def handle_water_refill_task(self, response, msg):
 
             match msg.get_metadata("type"):
-                case "Water Refill Request":
-                    self.agent.task_x = self.agent.base_x
-                    self.agent.task_y = self.agent.base_x
-                    self.agent.task = "resting"
-                    self.agent.taskSender = ""
-                    self.agent.add_behaviour(self.agent.RefillWaterBehaviour)
-                    
-                case "Task Finished":
-                    water_station = self.agent.water_station_jid
-                    msg = Message(to=water_station)
-                    #msg = 
+    
+                case "Water Refill Response":
+                    self.agent.task_x = response["water_station_x"]
+                    self.agent.task_y = response["water_station_y"]
+                    self.agent.task = "going_refill"
+                    self.agent.taskSender = jid_to_string(msg.sender)
+                    print(f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
+                
+                case "Water Refill":
+                    self.agent.task = "refilling_water"
+                    new_water = response["new_water"]
+                    self.agent.water += new_water
 
-        
-                #case "Water Refill Response":
-                    
+                    print(f"Refilling. Water at {self.agent.water}")
+
+                    if(self.agent.water >= self.agent.max_water):
+                        
+                        self.agent.water = self.agent.max_water
+                        self.agent.task = "resting"
+                        self.agent.taskSender = ""
+                        self.agent.task_x = self.agent.base_x
+                        self.agent.task_y = self.agent.base_x
+                        
+                        water_station = self.agent.water_station_jid
+                        msg = Message(to=water_station)
+                        msg.set_metadata("performative", "inform")
+                        msg.set_metadata("type", "Water Refill Finished")
+                        msg.set_metadata("agent", "Water Station")
+
+                        await self.send(msg)
+                        print(f"Water Refill Complete! Now at max water capacity of {self.agent.max_water}")
+
+                case "Water Refill Queue":
+                    self.agent.task = "waiting_refill"
+                    print(msg.body)     
 
     class MovementBehaviour(PeriodicBehaviour):
         async def run(self):
@@ -192,23 +218,38 @@ class RobotAgent(Agent):
         async def on_end(self):
             await self.agent.stop()
 
-    
     class RefillWaterBehaviour(OneShotBehaviour):
         async def run(self):
             if(self.agent.task == "resting" and self.agent.water < 100):
-                station = self.agent.water_station_jid
-                response = Message(to=station)
-                response.set_metadata("performative", "request")
-                response.set_metadata("type", "Water Refill Request")
-                response.body = {
+
+                water_station = self.agent.water_station_jid
+                msg = Message(to=water_station)
+                msg.set_metadata("performative", "request")
+                msg.set_metadata("type", "Water Refill Request")
+                msg.body = json.dumps({
                             "water": self.agent.water
-                        }
+                        })
                 
-                await self.send(response)
+                await self.send(msg)
+    
+    class UpdatePosBehaviour(PeriodicBehaviour):
+        async def run(self):
+            if(self.agent.task == "going_refill"):
 
+                water_station = self.agent.water_station_jid
+                msg = Message(to=water_station)
+                msg.set_metadata("performative", "inform")
+                msg.set_metadata("type", "Robot In Station")
+                msg.set_metadata("agent", "Water Station")
 
-        async def on_end(self):
-            await self.agent.stop()
+                msg.body = json.dumps({
+                  
+                    "robot_x": self.agent.x,
+                    "robot_y": self.agent.y
+
+                })
+
+                await self.send(msg)
 
     def __init__(self, jid, password, max_energy, max_water, robot_id, base_x, base_y, water_potency, robot_network,
                  water_station_jid, energy_station_jid):
@@ -216,7 +257,7 @@ class RobotAgent(Agent):
         self.max_energy = max_energy
         self.energy = max_energy
         self.max_water = max_water
-        self.water = max_water
+        self.water = 90
         self.robot_id = robot_id
         self.base_x = base_x
         self.base_y = base_y
@@ -248,3 +289,8 @@ class RobotAgent(Agent):
         e = self.WaterPlantsBehaviour(period=0.5, start_at=datetime.datetime.now())
         self.add_behaviour(e)
 
+        f = self.RefillWaterBehaviour()
+        self.add_behaviour(f)
+
+        g = self.UpdatePosBehaviour(period=0.5)
+        self.add_behaviour(g)

@@ -1,92 +1,130 @@
-import heapq
+import datetime
+import json
 from spade.agent import Agent
-from spade.behaviour import CyclicBehaviour, OneShotBehaviour
+from spade.behaviour import PeriodicBehaviour, CyclicBehaviour, OneShotBehaviour
 from spade.message import Message
-import time
-
-class WaterStationAgent(Agent):
-    async def setup(self):
-        print(f"Water Station Agent {self.jid} is running")
-        self.isAlreadyRefilling = False
-        self.refill_queue = []
-        self.add_behaviour(self.HandleWaterRequests())
-
-    class HandleWaterRequests(CyclicBehaviour):
-        async def run(self):
-            msg = await self.receive(timeout=10)
-            if msg:
-                if msg.get_metadata("message_type") == "Water Refill Request":
-                    print("sou eu")
-                    print(self.agent.refill_queue)
-                    water_capacity = float(msg.body)
-                    robot_jid = jid_to_string(msg.sender)
-                        
-                    # Add the request to the priority queue
-                    heapq.heappush(self.agent.refill_queue, (water_capacity, robot_jid))
-                    
-                    response = Message(to=robot_jid)
-                    response.set_metadata("performative", "inform")
-                    response.set_metadata("message_type", "Water Refill Response")
-                    response.body = "Your request has been received and you are now in the queue."
-                    await self.send(response)
-                        
-                    # Process the next refill request if not already refilling
-                    if not self.agent.isAlreadyRefilling:
-                        self.agent.add_behaviour(self.agent.ProcessNextRefillRequest())
-
-    class ProcessNextRefillRequest(OneShotBehaviour):
-        async def run(self):
-            # If there are elements in the queue
-            if self.agent.refill_queue:
-                print("Olha eu antes")
-                print(self.agent.refill_queue)
-                water_capacity, robot_jid = heapq.heappop(self.agent.refill_queue)
-                print("Olha eu depois")
-                print(self.agent.refill_queue)
-                response = Message(to=robot_jid)
-                response.set_metadata("performative", "proposal")
-                response.set_metadata("message_type", "Water Refill Response")
-
-                if not self.agent.isAlreadyRefilling:
-                    # Accept the refill request
-                    self.agent.isAlreadyRefilling = True
-                    response.body = "Water refill accepted"
-                    response.set_metadata("response_status", "accepted")
-                    await self.send(response)
-                    self.agent.add_behaviour(self.agent.RefillRobotBehaviour(robot_jid, water_capacity))
-                else:
-                    # Deny the refill request
-                    response.body = "Water refill denied: The station is already refilling. You are now in queue"
-                    response.set_metadata("response_status", "denied")
-                    await self.send(response)
-
-    class RefillRobotBehaviour(OneShotBehaviour):
-        def __init__(self, robot_jid, water_capacity):
-            super().__init__()
-            self.robot_jid = robot_jid
-            self.water_capacity = water_capacity
-
-        async def run(self):
-            water_level = self.water_capacity
-            while water_level < 100:
-                time.sleep(3)
-                water_level += 10
-                update_message = Message(to=self.robot_jid)
-                update_message.set_metadata("performative", "inform")
-                update_message.set_metadata("message_type", "Water Refill Update")
-                update_message.body = str(water_level)
-                await self.send(update_message)
-                print(f"Sent update to {self.robot_jid}: water level {water_level}%")
-            
-            self.agent.isAlreadyRefilling = False
-
-            print("olha eu simplesmente")
-            print(self.agent.refill_queue)
-            if self.agent.refill_queue:
-                self.agent.add_behaviour(self.agent.ProcessNextRefillRequest())
+from datetime import datetime
 
 def jid_to_string(jid):
-    if jid.resource:
-        return f"{jid.localpart}@{jid.domain}/{jid.resource}"
-    else:
-        return f"{jid.localpart}@{jid.domain}"
+
+    return f"{jid.localpart}@{jid.domain}"
+
+def get_robot(robots_list):
+    best_sender = None
+    lowest_water = float('inf')
+    longest_waiting_time = datetime.now()
+
+    for sender, data in robots_list.items():
+        water = data['water']
+        waiting_time = data['waiting_time']
+
+        if water < lowest_water or (water == lowest_water and waiting_time < longest_waiting_time):
+            best_sender = sender
+            lowest_water = water
+            longest_waiting_time = waiting_time
+
+    return best_sender
+
+class WaterStationAgent(Agent):
+
+    class ReceiverBehaviour(CyclicBehaviour):
+        async def run(self):
+            msg = await self.receive(timeout=1000)
+            if msg:
+
+                if(msg.body != None):
+                    response = json.loads(msg.body)
+
+                match msg.get_metadata("type"):
+                    case "Water Refill Request":
+                        sender = jid_to_string(msg.sender)
+                        self.agent.robots_list[sender] = {
+                            "water": response['water'],
+                            "waiting_time" : datetime.now()
+                        }
+
+                        print(self.agent.robots_list)
+                        
+                    case "Water Refill Finished":
+                        sender = jid_to_string(msg.sender)
+                        print("The robot " + self.agent.robot_jid + " completed it's recharge")
+                        self.agent.robot_jid = None
+                        self.agent.robots_list.pop(sender)
+                        self.agent.in_pos = False
+
+                    case "Robot In Station":
+                        sender = jid_to_string(msg.sender)
+                        pos_x = response['robot_x']
+                        pos_y = response['robot_y']
+
+               
+                        if(pos_x == self.agent.station_x and pos_y == self.agent.station_y):
+          
+                            self.agent.in_pos = True
+
+                    case _:
+                        print("Unknown ")
+
+            else:
+                print("Did not received any message after 1000 seconds")
+                self.kill()
+
+    class ResponseBehaviour(PeriodicBehaviour):
+        async def run(self):
+            if(self.agent.robot_jid == None):
+
+                robot = get_robot(self.agent.robots_list)
+                for sender in self.agent.robots_list.keys():
+                    print(sender)
+                    if robot == sender:
+                        response = Message(to=robot)
+                        response.set_metadata("performative", "inform")
+                        response.set_metadata("type", "Water Refill Response")
+                        response.set_metadata("agent", "Water Station")
+                        response.body = json.dumps({
+                            "water_station_x": self.agent.station_x,
+                            "water_station_y": self.agent.station_y
+                        })
+                        self.agent.robot_jid = robot
+                    else:
+                        response = Message(to=sender)
+                        response.set_metadata("performative", "accept-proposal")
+                        response.set_metadata("type", "Water Refill Queue")
+                        response.set_metadata("agent", "Water Station")
+                        response.body = "You are now in the waiting list"
+                  
+                    await self.send(response)
+
+    class RefillBehaviour(PeriodicBehaviour):
+        async def run(self):
+            if(self.agent.robot_jid != None and self.agent.in_pos):
+
+                msg = Message(to=self.agent.robot_jid)
+                msg.set_metadata("performative", "inform")
+                msg.set_metadata("type", "Water Refill")
+                msg.set_metadata("agent", "Water Station")
+                msg.body = json.dumps({
+                    "new_water": self.agent.water
+                })
+                await self.send(msg)
+
+
+    def __init__(self, jid, password, water, station_x, station_y):
+        super().__init__(jid, password)
+        self.robot_jid = None
+        self.water = water
+        self.station_x = station_x
+        self.station_y = station_y
+        self.robots_list = {}
+        self.in_pos = False
+
+    async def setup(self):
+
+        a = self.ReceiverBehaviour()
+        self.add_behaviour(a)
+
+        b = self.ResponseBehaviour(period = 2)
+        self.add_behaviour(b)
+
+        c = self.RefillBehaviour(period = 2)
+        self.add_behaviour(c)
