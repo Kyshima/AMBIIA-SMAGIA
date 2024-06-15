@@ -95,7 +95,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -103,7 +103,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -132,7 +132,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -140,7 +140,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -169,7 +169,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -177,7 +177,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -206,7 +206,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -214,7 +214,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -243,7 +243,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -251,7 +251,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -280,7 +280,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -288,7 +288,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -317,7 +317,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -325,7 +325,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -354,7 +354,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -362,7 +362,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -391,7 +391,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -399,7 +399,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -428,7 +428,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -436,7 +436,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -465,7 +465,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -473,7 +473,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -502,7 +502,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -510,7 +510,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -539,7 +539,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -547,7 +547,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -576,7 +576,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -584,7 +584,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -613,7 +613,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -621,7 +621,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -650,7 +650,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -658,7 +658,7 @@
         <collision name='collision'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/plants/PotPlant.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/plants/PotPlant.dae</uri>
               <scale>0.2 0.2 0.2</scale>
             </mesh>
           </geometry>
@@ -1038,7 +1038,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/well/meshes/well.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/well/meshes/well.dae</uri>
               <scale>0.1 0.1 0.1</scale>
             </mesh>
           </geometry>
@@ -1148,7 +1148,7 @@
         <visual name='visual'>
           <geometry>
             <mesh>
-              <uri>file:///home/kyshima/gazebo_ws/src/plugins/models/charger2/charger.dae</uri>
+              <uri>file:///home/violas/ros2_ws/src/plugins/models/charger2/charger.dae</uri>
               <scale>1 1 1</scale>
             </mesh>
           </geometry>
@@ -1659,6 +1659,16 @@
         <left_joint>left_wheel_joint</left_joint>
         <right_joint>right_wheel_joint</right_joint>
       </plugin>
+
+      <include>
+        <uri>model://hokuyo</uri>
+        <pose>0.4 0 0.5 0 0 0</pose>
+      </include>
+      <joint name="hokuyo_joint" type="fixed">
+        <child>hokuyo::link</child>
+        <parent>base_link</parent>
+      </joint>
+
     </model>
     <model name='robot2'>
       <pose>-8.20819 1.06742 0.100758 9e-06 0 0.012346</pose>

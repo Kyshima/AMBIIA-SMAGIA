@@ -2,6 +2,8 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
+from sensor_msgs.msg import PointCloud2
+import sensor_msgs_py.point_cloud2 as pc2
 import math
 
 class RobotMover(Node):
@@ -9,6 +11,12 @@ class RobotMover(Node):
         super().__init__('robot_mover')
         self.publisher_ = self.create_publisher(Twist, '/robot1/cmd_vel', 10)
         self.subscription = self.create_subscription(Odometry, '/robot1/odom', self.odom_callback, 10)
+        self.subscription = self.create_subscription(
+            PointCloud2,
+            '/laser/out',
+            self.pointcloud_callback,
+            10
+        )
         self.target_x = 2.5  # Target x position
         self.target_y = -4.0  # Target y position
         self.current_x = 0.0
@@ -51,6 +59,19 @@ class RobotMover(Node):
 
         self.publisher_.publish(msg)
         self.get_logger().info(f'Current state: {self.state}, Current position: ({self.current_x}, {self.current_y}), Velocity: ({msg.linear.x})')
+
+    def pointcloud_callback(self, msg):
+        msg1 = Twist()
+        points = []
+        for point in pc2.read_points(msg, skip_nans=True):
+            angle = (math.atan2(point[1], point[0]))*180/math.pi
+            dist = math.sqrt( (point[0]*point[0]) + (point[1]*point[1]) )
+
+            if dist < 1.0:
+                msg1.linear.x = 0.0
+                self.state = 'stop'
+                self.publisher_.publish(msg1)
+                print(f'Received a point with an angle of {angle} and distance {dist}')
 
 def main(args=None):
     rclpy.init(args=args)
