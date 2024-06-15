@@ -293,7 +293,7 @@ class RobotAgent(Agent):
 
     class UpdatePosBehaviour(PeriodicBehaviour):
         async def run(self):
-            if (self.agent.task == "going_refill"):
+            if self.agent.task == "going_refill":
                 water_station = self.agent.water_station_jid
                 msg = Message(to=water_station)
                 msg.set_metadata("performative", "inform")
@@ -306,8 +306,10 @@ class RobotAgent(Agent):
                     "robot_y": self.agent.y
 
                 })
+
+                await self.send(msg)
             
-            elif(self.agent.task == "going_recharge"):
+            elif self.agent.task == "going_recharge":
                 
                 energy_station = self.agent.energy_station_jid
                 msg = Message(to=energy_station)
