@@ -92,9 +92,9 @@ class HumiditySensorAgent(Agent):
 
                     reply = msg.make_reply()
                     reply.body = json.dumps(data)
-                    reply.set_metadata("performative", "cancel")
+                    reply.set_metadata("performative", "subscribe")
                     reply.set_metadata("agent", "sensor")
-                    reply.set_metadata("type", "subscribe")
+                    reply.set_metadata("type", "give_task")
                     await self.send(reply)
                 case _:
                     log_sensor("Unknown type from robot agent")

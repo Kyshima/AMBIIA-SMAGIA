@@ -44,14 +44,14 @@ class RobotAgent(Agent):
                                 new_capacity = float(update.body)
                                 print(f"Water capacity updated to {new_capacity}%")
                                 self.agent.water_capacity = new_capacity
+                            else:
+                                print("Water recharge denied: The station is already refilling")
+                        else:
+                            print("Water capacity is already at 100%. Stopping recharge.")
+                            await self.agent.stop()
+                            print(f"Message received: asd")
                     else:
-                        print("Water recharge denied: The station is already refilling")
-            else:
-                print("Water capacity is already at 100%. Stopping recharge.")
-                await self.agent.stop()
-                        print(f"Message received: {response.body}")
-                else:
-                    print("No response from the water station.")
+                        print("No response from the water station.")
                 
             else:
                 print("Water capacity is already at 100%. Stopping refill.")
