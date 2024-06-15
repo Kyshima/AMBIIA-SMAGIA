@@ -1,0 +1,278 @@
+<?xml version="1.0" ?>
+<sdf version="1.6">
+  <model name='robot4'>
+  <pose>-8.52989 -2.96423 0.201518 -0 -0 -0.000819</pose>
+  <link name='base_link'>
+    <pose>-0.151427 -0 0.175 0 -0 0</pose>
+    <inertial>
+      <mass>0.571975</mass>
+      <inertia>
+        <ixx>0.015791</ixx>
+        <ixy>0</ixy>
+        <ixz>0</ixz>
+        <iyy>0.20826</iyy>
+        <iyz>0</iyz>
+        <izz>0.240507</izz>
+      </inertia>
+      <pose>0 0 0 0 -0 0</pose>
+    </inertial>
+    <visual name='visual'>
+      <geometry>
+        <box>
+          <size>1.00571 0.5 0.284363</size>
+        </box>
+      </geometry>
+      <material>
+        <ambient>0.6 1.0 0.6 1.0</ambient>
+        <diffuse>0.6 1.0 0.6 1.0</diffuse>
+        <specular>0.8 1.0 0.8 1.0</specular>
+      </material>
+    </visual>
+    <collision name='collision'>
+      <geometry>
+        <box>
+          <size>1.00571 0.5 0.284363</size>
+        </box>
+      </geometry>
+      <max_contacts>10</max_contacts>
+      <surface>
+        <contact>
+          <ode/>
+        </contact>
+        <bounce/>
+        <friction>
+          <torsional>
+            <ode/>
+          </torsional>
+          <ode/>
+        </friction>
+      </surface>
+    </collision>
+    <self_collide>0</self_collide>
+    <enable_wind>0</enable_wind>
+    <kinematic>0</kinematic>
+  </link>
+  <link name='left_wheel'>
+    <pose>0.277141 0.312515 -0.0125 -1.5707 0 0</pose>
+    <inertial>
+      <mass>0.5</mass>
+      <inertia>
+        <ixx>0.0364583</ixx>
+        <ixy>0</ixy>
+        <ixz>0</ixz>
+        <iyy>0.0364583</iyy>
+        <iyz>0</iyz>
+        <izz>0.03125</izz>
+      </inertia>
+      <pose>0 0 0 0 -0 0</pose>
+    </inertial>
+    <visual name='visual'>
+      <geometry>
+        <sphere>
+          <radius>0.15</radius>
+        </sphere>
+      </geometry>
+      <material>
+        <ambient>0.1 0.1 0.1 1.0</ambient>
+        <diffuse>0.2 0.2 0.2 1.0</diffuse>
+        <specular>0.3 0.3 0.3 1.0</specular>
+      </material>
+    </visual>
+    <collision name='collision'>
+      <geometry>
+        <sphere>
+          <radius>0.15</radius>
+        </sphere>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1</mu>
+            <mu2>1</mu2>
+            <slip1>0</slip1>
+            <slip2>0</slip2>
+          </ode>
+          <torsional>
+            <ode/>
+          </torsional>
+        </friction>
+        <contact>
+          <ode>
+            <soft_cfm>0</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>1e+13</kp>
+            <kd>1</kd>
+            <max_vel>0.01</max_vel>
+            <min_depth>0.01</min_depth>
+          </ode>
+        </contact>
+        <bounce/>
+      </surface>
+      <max_contacts>10</max_contacts>
+    </collision>
+    <self_collide>0</self_collide>
+    <enable_wind>0</enable_wind>
+    <kinematic>0</kinematic>
+  </link>
+  <link name='right_wheel'>
+    <pose>0.277141 -0.312515 -0.0125 -1.5707 0 0</pose>
+    <inertial>
+      <mass>0.5</mass>
+      <inertia>
+        <ixx>0.0364583</ixx>
+        <ixy>0</ixy>
+        <ixz>0</ixz>
+        <iyy>0.0364583</iyy>
+        <iyz>0</iyz>
+        <izz>0.03125</izz>
+      </inertia>
+      <pose>0 0 0 0 -0 0</pose>
+    </inertial>
+    <visual name='visual'>
+      <geometry>
+        <sphere>
+          <radius>0.15</radius>
+        </sphere>
+      </geometry>
+      <material>
+        <ambient>0.1 0.1 0.1 1.0</ambient>
+        <diffuse>0.2 0.2 0.2 1.0</diffuse>
+        <specular>0.3 0.3 0.3 1.0</specular>
+      </material>
+    </visual>
+    <collision name='collision'>
+      <geometry>
+        <sphere>
+          <radius>0.15</radius>
+        </sphere>
+      </geometry>
+      <surface>
+        <friction>
+          <ode>
+            <mu>1</mu>
+            <mu2>1</mu2>
+            <slip1>0</slip1>
+            <slip2>0</slip2>
+          </ode>
+          <torsional>
+            <ode/>
+          </torsional>
+        </friction>
+        <contact>
+          <ode>
+            <soft_cfm>0</soft_cfm>
+            <soft_erp>0.2</soft_erp>
+            <kp>1e+13</kp>
+            <kd>1</kd>
+            <max_vel>0.01</max_vel>
+            <min_depth>0.01</min_depth>
+          </ode>
+        </contact>
+        <bounce/>
+      </surface>
+      <max_contacts>10</max_contacts>
+    </collision>
+    <self_collide>0</self_collide>
+    <enable_wind>0</enable_wind>
+    <kinematic>0</kinematic>
+  </link>
+  <link name='caster'>
+    <pose>-0.478569 -0 -0.0625 0 -0 0</pose>
+    <inertial>
+      <mass>0.5</mass>
+      <inertia>
+        <ixx>0.025</ixx>
+        <ixy>0</ixy>
+        <ixz>0</ixz>
+        <iyy>0.025</iyy>
+        <iyz>0</iyz>
+        <izz>0.025</izz>
+      </inertia>
+      <pose>0 0 0 0 -0 0</pose>
+    </inertial>
+    <visual name='visual'>
+      <geometry>
+        <sphere>
+          <radius>0.1</radius>
+        </sphere>
+      </geometry>
+      <material>
+        <ambient>0.1 0.1 0.1 1.0</ambient>
+        <diffuse>0.2 0.2 0.2 1.0</diffuse>
+        <specular>0.3 0.3 0.3 1.0</specular>
+      </material>
+    </visual>
+    <collision name='collision'>
+      <geometry>
+        <sphere>
+          <radius>0.1</radius>
+        </sphere>
+      </geometry>
+      <max_contacts>10</max_contacts>
+      <surface>
+        <contact>
+          <ode/>
+        </contact>
+        <bounce/>
+        <friction>
+          <torsional>
+            <ode/>
+          </torsional>
+          <ode/>
+        </friction>
+      </surface>
+    </collision>
+    <self_collide>0</self_collide>
+    <enable_wind>0</enable_wind>
+    <kinematic>0</kinematic>
+  </link>
+  <joint name='left_wheel_joint' type='revolute'>
+    <parent>base_link</parent>
+    <child>left_wheel</child>
+    <axis>
+      <xyz>0 0 1</xyz>
+      <limit>
+        <lower>-1.79769e+308</lower>
+        <upper>1.79769e+308</upper>
+      </limit>
+      <dynamics>
+        <spring_reference>0</spring_reference>
+        <spring_stiffness>0</spring_stiffness>
+      </dynamics>
+    </axis>
+  </joint>
+  <joint name='right_wheel_joint' type='revolute'>
+    <parent>base_link</parent>
+    <child>right_wheel</child>
+    <axis>
+      <xyz>0 0 1</xyz>
+      <limit>
+        <lower>-1.79769e+308</lower>
+        <upper>1.79769e+308</upper>
+      </limit>
+      <dynamics>
+        <spring_reference>0</spring_reference>
+        <spring_stiffness>0</spring_stiffness>
+      </dynamics>
+    </axis>
+  </joint>
+  <joint name='caster_wheel' type='ball'>
+    <parent>base_link</parent>
+    <child>caster</child>
+  </joint>
+  <plugin name="gazebo_ros_diff_drive" filename="libgazebo_ros_diff_drive.so">
+      <ros>
+        <namespace>/robot4</namespace> <!-- Adicionado namespace único -->
+        <remapping>odom:=odom</remapping>
+      </ros>
+      <publishOdomTf>1</publishOdomTf>
+      <commandTopic>cmd_vel</commandTopic>
+      <odometryTopic>odom</odometryTopic>
+      <odometrySource>WORLD</odometrySource>
+      <publish_odom>1</publish_odom>
+      <robotBaseFrame>base_link</robotBaseFrame>
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
+    </plugin>
+</model>
+</sdf>

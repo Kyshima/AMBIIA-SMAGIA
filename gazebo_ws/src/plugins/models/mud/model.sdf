@@ -1,0 +1,79 @@
+<?xml version="1.0" ?>
+<sdf version="1.5">
+  <model name="mud">
+    <static>true</static>
+    <link name="link">
+      <collision name="collision">
+        <geometry>
+          <box>
+            <size>17.6 20 0.2</size> <!-- 8 * 2.2 = 17.6, 10 * 2 = 20 -->
+          </box>
+        </geometry>
+      </collision>
+      <visual name="visual_1">
+        <pose>-4.4 5 0 0 0 0</pose> <!-- -2 * 2.2 = -4.4, 2.5 * 2 = 5 -->
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>8.8 10 0.2</size> <!-- 4 * 2.2 = 8.8, 5 * 2 = 10 -->
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://mud_box/materials/scripts</uri>
+            <uri>model://mud_box/materials/textures</uri>
+            <name>vrc/mud</name>
+          </script>
+        </material>
+      </visual>
+      <visual name="visual_2">
+        <pose>4.4 5 0 0 0 0</pose> <!-- 2 * 2.2 = 4.4, 2.5 * 2 = 5 -->
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>8.8 10 0.2</size> <!-- 4 * 2.2 = 8.8, 5 * 2 = 10 -->
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://mud_box/materials/scripts</uri>
+            <uri>model://mud_box/materials/textures</uri>
+            <name>vrc/mud</name>
+          </script>
+        </material>
+      </visual>
+      <visual name="visual_3">
+        <pose>4.4 -5 0 0 0 0</pose> <!-- 2 * 2.2 = 4.4, -2.5 * 2 = -5 -->
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>8.8 10 0.2</size> <!-- 4 * 2.2 = 8.8, 5 * 2 = 10 -->
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://mud_box/materials/scripts</uri>
+            <uri>model://mud_box/materials/textures</uri>
+            <name>vrc/mud</name>
+          </script>
+        </material>
+      </visual>
+      <visual name="visual_4">
+        <pose>-4.4 -5 0 0 0 0</pose> <!-- -2 * 2.2 = -4.4, -2.5 * 2 = -5 -->
+        <cast_shadows>false</cast_shadows>
+        <geometry>
+          <box>
+            <size>8.8 10 0.2</size> <!-- 4 * 2.2 = 8.8, 5 * 2 = 10 -->
+          </box>
+        </geometry>
+        <material>
+          <script>
+            <uri>model://mud_box/materials/scripts</uri>
+            <uri>model://mud_box/materials/textures</uri>
+            <name>vrc/mud</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>

@@ -1,4 +1,5 @@
 from sensors import HumiditySensorAgent
+from sensors_network import HumiditySensorAgent
 import spade
 
 
@@ -33,6 +34,14 @@ async def main():
 
     await spade.wait_until_finished(sensor_humidity1)
     await spade.wait_until_finished(sensor_humidity2)
+
+    sensor_humidity1 = HumiditySensorAgent("sensor_humidity1@jabbers.one", "sensor_humidity1", 100, 5, "sensor1", 3, 7, robot_network)
+    sensor_humidity1.set("receiver_jid", "receiver@jabbers.one")
+    await sensor_humidity1.start(auto_register=True)
+
+    sensor_humidity1.web.start(hostname="127.0.0.1", port="10000")
+
+    await sensor_humidity1.stop()
     print("Receiver Agent finished")
 
 

@@ -7,6 +7,8 @@ async def main():
     robot_agent = RobotAgent(jid, password)
     
     robot_agent.water_capacity = 30
+    robot_agent.energy_capacity = 20
+
     
     await robot_agent.start(auto_register=True)
     print("Robot Agent Started")
@@ -19,4 +21,3 @@ async def main():
 
 if __name__ == "__main__":
     spade.run(main())
-

@@ -1,5 +1,6 @@
 from robots import RobotAgent
 import spade
+from robots_network import RobotAgent
 
 
 #robot1@jabbers.one robot1
@@ -21,6 +22,17 @@ async def main():
 
     await spade.wait_until_finished(robot1)
     await robot2.stop()
+# receiver@jabbers.one receiver
+
+async def main():
+
+    robot1 = RobotAgent("robot1@jabbers.one", "robot1", 500, 500, "robot1", 0, 10, 10, robot_network,'water_station@jabbers.one','energy_station@jabbers.one')
+    await robot1.start(auto_register=True)
+
+    robot1.web.start(hostname="127.0.0.1", port="11000")
+
+    await spade.wait_until_finished(robot1)
+    await robot1.stop()
     print("Receiver Agent finished")
 
 
