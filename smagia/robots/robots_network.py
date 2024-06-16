@@ -16,11 +16,9 @@ def jid_to_string(jid):
 
 log = True
 
-
 def log_robots(msg):
     if log:
         print(f"robot: {msg}")
-
 
 def get_max_potency_jid_network(robot):
     robots_dict = robot.robots_availability.copy()
@@ -111,6 +109,7 @@ class RobotAgent(Agent):
                     self.agent.task = "resting"
                     self.agent.taskSender = ""
                     self.agent.add_behaviour(self.agent.RefillWaterBehaviour())
+                    self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
 
                 case "watering":
                     robot = get_max_potency_jid_network(self.agent)
@@ -245,7 +244,8 @@ class RobotAgent(Agent):
                 self.agent.y += 1
             elif self.agent.y > y:
                 self.agent.y -= 1
-
+            
+            self.agent.energy -= self.agent.energy*0.05
             log_robots(f"Moved to ({self.agent.x},{self.agent.y})")
 
     class WaterPlantsBehaviour(PeriodicBehaviour):
@@ -268,7 +268,9 @@ class RobotAgent(Agent):
 
     class RefillWaterBehaviour(OneShotBehaviour):
         async def run(self):
-            if (self.agent.task == "resting" and self.agent.water < 100):
+            min_water = self.agent.water*0.35
+
+            if (self.agent.task == "resting" and self.agent.water <= min_water):
                 water_station = self.agent.water_station_jid
                 msg = Message(to=water_station)
                 msg.set_metadata("performative", "request")
@@ -280,7 +282,8 @@ class RobotAgent(Agent):
                 await self.send(msg)
     class RechargeEnergyBehaviour(OneShotBehaviour):
         async def run(self):
-            if (self.agent.task == "resting" and self.agent.energy < 100):
+            min_energy = self.agent.energy*0.35
+            if (self.agent.task == "resting" and self.agent.energy <= min_energy):
                 energy_station = self.agent.energy_station_jid
                 msg = Message(to=energy_station)
                 msg.set_metadata("performative", "request")
@@ -364,8 +367,5 @@ class RobotAgent(Agent):
         e = self.WaterPlantsBehaviour(period=0.5, start_at=datetime.datetime.now())
         self.add_behaviour(e)
 
-        f = self.RefillWaterBehaviour()
+        f = self.UpdatePosBehaviour(period=0.5)
         self.add_behaviour(f)
-
-        g = self.UpdatePosBehaviour(period=0.5)
-        self.add_behaviour(g)
