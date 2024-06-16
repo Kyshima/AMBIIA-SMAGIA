@@ -17,8 +17,8 @@ class RobotMover(Node):
             self.pointcloud_callback,
             10
         )
-        self.target_x = 2.5  # Target x position
-        self.target_y = -4.0  # Target y position
+        self.target_x = 2.0  # Target x position
+        self.target_y = 2.0  # Target y position
         self.current_x = 0.0
         self.current_y = 0.0
         self.current_yaw = 0.0
@@ -69,7 +69,12 @@ class RobotMover(Node):
 
             if dist < 1.0:
                 msg1.linear.x = 0.0
-                self.state = 'stop'
+                self.state = 'rotate'
+                if angle < 0:
+                    msg1.angular.z = 0.3
+                else:
+                    msg1.angular.z = -0.3
+
                 self.publisher_.publish(msg1)
                 print(f'Received a point with an angle of {angle} and distance {dist}')
 
