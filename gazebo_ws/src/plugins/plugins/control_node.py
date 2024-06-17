@@ -17,13 +17,13 @@ class RobotMover(Node):
             self.pointcloud_callback,
             10
         )
-        self.target_x = -2.0  # Target x position
-        self.target_y = -2.0  # Target y position
+        self.target_x = -1.0  # Target x position
+        self.target_y = -4.0  # Target y position
         self.current_x = 0.0
         self.current_y = 0.0
         self.current_yaw = 0.0
         self.state = 'rotate'
-        self.timer_period = 0.1  # seconds
+        self.timer_period = 0.5  # seconds
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
 
     def odom_callback(self, msg):
@@ -36,9 +36,17 @@ class RobotMover(Node):
 
     def timer_callback(self):
         msg = Twist()
+        target_angle = math.atan2(self.target_y - self.current_y, self.target_x - self.current_x)
+        angle_diff = target_angle - self.current_yaw
+
+        self.get_logger().info(f'Angulo: {abs(angle_diff)}')
+
+        # if abs(angle_diff) > 0.1:
+        #     msg.linear.x = 0.0
+        #     self.state = 'rotate'
+
         if self.state == 'rotate':
-            target_angle = math.atan2(self.target_y - self.current_y, self.target_x - self.current_x)
-            angle_diff = target_angle - self.current_yaw
+            
             if abs(angle_diff) > 0.1:
                 msg.angular.z = 0.3 if angle_diff > 0 else -0.3
             else:
@@ -46,13 +54,17 @@ class RobotMover(Node):
                 self.state = 'move'
 
         elif self.state == 'move':
+            if not self.obstacle_found:
+                if abs(angle_diff) > 0.1:
+                    self.state = 'rotate'
             # Calculate distance projection onto forward direction
             distance_x = (self.target_x - self.current_x) * math.cos(self.current_yaw)
             distance_y = (self.target_y - self.current_y) * math.sin(self.current_yaw)
             distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
-            
+            self.get_logger().info(f'Distance: {distance}, Distance X: {distance_x}, Distance Y: {distance_y}')
             if distance > 0.3:
-                msg.linear.x = 0.4
+                if distance_x > 0.3 or distance_y > 0.3:
+                    msg.linear.x = 0.4
             else:
                 msg.linear.x = 0.0
                 self.state = 'stop'
@@ -61,28 +73,29 @@ class RobotMover(Node):
         self.get_logger().info(f'Current state: {self.state}, Current position: ({self.current_x}, {self.current_y}), Velocity: ({msg.linear.x})')
 
     def pointcloud_callback(self, msg):
+        self.obstacle_found = False
         msg1 = Twist()
-        points = []
         for point in pc2.read_points(msg, skip_nans=True):
             angle = (math.atan2(point[1], point[0]))*180/math.pi
             dist = math.sqrt( (point[0]*point[0]) + (point[1]*point[1]) )
 
-            if dist < 1.0:
-                msg1.linear.x = 0.0
-                self.state = 'rotate'
+            if dist < 1.0 and self.state != 'stop':
+                self.obstacle_found = True
+                self.state = 'obstacle'
                 if angle < 0 and angle > -45.0:
                     msg1.angular.z = 0.3
                 elif angle > 0 and angle < 45.0:
                     msg1.angular.z = -0.3
                 else:
                     msg1.angular.z = 0.0
-                    msg1.linear.x = 0.4
+                    self.state = 'move'
+                
 
-                print(f'Received a point with an angle of {angle} and distance {dist}')
-            else:
-                msg1.linear.x = 0.4
-
+            print(f'Received a point with an angle of {angle} and distance {dist}')
+        if self.state == 'obstacle':
             self.publisher_.publish(msg1)
+
+        
             
 
 def main(args=None):
