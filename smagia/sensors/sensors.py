@@ -32,7 +32,7 @@ class HumiditySensorAgent(Agent):
                     msg.body = json.dumps(data)
                     await self.send(msg)
                     log_sensor(f"Sensor {self.agent.sensor_id} HELP!!!")
-            elif self.agent.humidity == 0:
+            elif self.agent.humidity <= 0:
                 log_sensor(f"Sensor {self.agent.sensor_id}'s Plant has died")
                 self.kill()
 
