@@ -25,7 +25,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'control_node = plugins.control_node:main'
+            'control_node = plugins.control_node:main',
+            'humidity = plugins.humidity:main',
         ],
     },
 )
