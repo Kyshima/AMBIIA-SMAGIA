@@ -312,7 +312,8 @@ class RobotAgent(Agent):
 
     class WaterPlantsBehaviour(PeriodicBehaviour):
         async def run(self):
-            if self.agent.task == "watering" and self.agent.x == self.agent.task_x and self.agent.y == self.agent.task_y:
+            if (self.agent.task == "watering" and -0.5 < self.agent.x - self.agent.task_x < 0.5
+                    and -0.5 < self.agent.y - self.agent.task_y < 0.5):
                 data = {
                     "water": self.agent.water_potency,
                 }

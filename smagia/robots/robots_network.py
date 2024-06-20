@@ -12,7 +12,7 @@ def jid_to_string(jid):
     return f"{jid.localpart}@{jid.domain}"
 
 
-log = False
+log = True
 
 
 def log_robots(msg):
