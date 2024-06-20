@@ -1,3 +1,5 @@
+import sys
+import paho.mqtt.client as paho
 import datetime
 import json
 from spade.agent import Agent
@@ -6,7 +8,7 @@ from spade.message import Message
 import math
 
 
-#from utils.utils import jid_to_string, get_max_potency_jid
+# from utils.utils import jid_to_string, get_max_potency_jid
 
 def jid_to_string(jid):
     return f"{jid.localpart}@{jid.domain}"
@@ -170,8 +172,16 @@ class RobotAgent(Agent):
                     self.agent.task_y = response["y"]
                     self.agent.task = "watering"
                     self.agent.taskSender = jid_to_string(msg.sender)
-                    log_robots(
-                        f"Received task for x:{self.agent.task_x},y:{self.agent.task_y} from {self.agent.taskSender}")
+
+                    data = {
+                        "x": response['x'],
+                        "y": response['y'],
+                    }
+                    client = paho.Client()
+                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.disconnect()
+
+                    log_robots(f"Received task for x:{self.agent.task_x},y:{self.agent.task_y} from {self.agent.taskSender}")
                 case _:
                     log_robots("Unknown type from sensor agent")
 
@@ -184,7 +194,8 @@ class RobotAgent(Agent):
                     self.agent.task_y = response["water_station_y"]
                     self.agent.task = "going_refill"
                     self.agent.taskSender = jid_to_string(msg.sender)
-                    print(f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
+                    print(
+                        f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
 
                 case "Water Refill":
                     self.agent.task = "refilling_water"
@@ -366,6 +377,30 @@ class RobotAgent(Agent):
 
                 await self.send(msg)
 
+    class MqttReceivePositionBehaviour(OneShotBehaviour):
+
+        async def run(self):
+            def message_handling(client, userdata, msg):
+                print(f"{msg.topic}: {msg.payload.decode()}")
+
+            client = paho.Client()
+            client.on_message = message_handling
+
+            if client.connect("localhost", 1883, 60) != 0:
+                print("Couldn't connect to the mqtt broker")
+                self.agent.kill()
+
+            client.subscribe("Coordinates1")
+
+            try:
+                print("Connected")
+                client.loop_forever()
+            except Exception:
+                print("Caught an Exception, something went wrong...")
+            finally:
+                print("Disconnecting from the MQTT broker")
+                client.disconnect()
+
     def __init__(self, jid, password, max_energy, max_water, robot_id, base_x, base_y, water_potency, robot_network,
                  water_station_jid, energy_station_jid, energy_waste):
         super().__init__(jid, password)
@@ -413,3 +448,6 @@ class RobotAgent(Agent):
 
         h = self.RefillWaterBehaviour()
         self.add_behaviour(h)
+
+        i = self.MqttReceivePositionBehaviour()
+        self.add_behaviour(i)

@@ -1,5 +1,5 @@
 import spade
-from robots_network import RobotAgent
+from robots_mqtt import RobotAgent
 
 
 #robot1@jabbers.one robot1
