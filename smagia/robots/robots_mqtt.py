@@ -144,6 +144,16 @@ class RobotAgent(Agent):
                     self.agent.task_y = self.agent.base_x
                     self.agent.task = "resting"
                     self.agent.taskSender = ""
+
+                    data = {
+                        "x": self.agent.base_x,
+                        "y": self.agent.base_y,
+                    }
+                    client = paho.Client()
+                    client.connect("localhost", 1883, 60)
+                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.disconnect()
+
                     self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
                     self.agent.add_behaviour(self.agent.RefillWaterBehaviour())
 
@@ -195,8 +205,16 @@ class RobotAgent(Agent):
                     self.agent.task_y = response["water_station_y"]
                     self.agent.task = "going_refill"
                     self.agent.taskSender = jid_to_string(msg.sender)
-                    print(
-                        f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
+                    print(f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
+
+                    data = {
+                        "x": response["water_station_x"],
+                        "y": response["water_station_y"],
+                    }
+                    client = paho.Client()
+                    client.connect("localhost", 1883, 60)
+                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.disconnect()
 
                 case "Water Refill":
                     self.agent.task = "refilling_water"
@@ -211,13 +229,22 @@ class RobotAgent(Agent):
                         self.agent.task = "resting"
                         self.agent.taskSender = ""
                         self.agent.task_x = self.agent.base_x
-                        self.agent.task_y = self.agent.base_x
+                        self.agent.task_y = self.agent.base_y
 
                         water_station = self.agent.water_station_jid
                         msg = Message(to=water_station)
                         msg.set_metadata("performative", "inform")
                         msg.set_metadata("type", "Water Refill Finished")
                         msg.set_metadata("agent", "Water Station")
+
+                        data = {
+                            "x": self.agent.base_x,
+                            "y": self.agent.base_y,
+                        }
+                        client = paho.Client()
+                        client.connect("localhost", 1883, 60)
+                        client.publish("target_coordinates", json.dumps(data), 0)
+                        client.disconnect()
 
                         await self.send(msg)
                         print(f"Water Refill Complete! Now at max water capacity of {self.agent.max_water}")
@@ -235,8 +262,16 @@ class RobotAgent(Agent):
                     self.agent.task_y = response["energy_station_y"]
                     self.agent.task = "going_recharge"
                     self.agent.taskSender = jid_to_string(msg.sender)
-                    print(
-                        f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
+
+                    data = {
+                        "x": response["energy_station_x"],
+                        "y": response["energy_station_y"],
+                    }
+                    client = paho.Client()
+                    client.connect("localhost", 1883, 60)
+                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.disconnect()
+                    print(f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
 
                 case "Energy Recharge":
                     self.agent.task = "recharging_energy"
@@ -259,40 +294,21 @@ class RobotAgent(Agent):
                         msg.set_metadata("type", "Energy Recharge Finished")
                         msg.set_metadata("agent", "Energy Station")
 
+                        data = {
+                            "x": self.agent.base_x,
+                            "y": self.agent.base_x,
+                        }
+                        client = paho.Client()
+                        client.connect("localhost", 1883, 60)
+                        client.publish("target_coordinates", json.dumps(data), 0)
+                        client.disconnect()
+
                         await self.send(msg)
                         print(f"Energy Recharge Complete! Now at max energy capacity of {self.agent.max_energy}")
                         self.agent.add_behaviour(self.agent.RefillWaterBehaviour())
 
                 case "Energy Recharge Queue":
                     self.agent.task = "waiting_recharge"
-
-    class MovementBehaviour(PeriodicBehaviour):
-        async def run(self):
-            if self.agent.task == "resting":
-                if self.agent.x != self.agent.base_x or self.agent.y != self.agent.base_y:
-                    self.move_towards_goal(self.agent.base_x, self.agent.base_y)
-            else:
-                if self.agent.x != self.agent.task_x or self.agent.y != self.agent.task_y:
-                    self.move_towards_goal(self.agent.task_x, self.agent.task_y)
-
-        async def on_end(self):
-            await self.agent.stop()
-
-        def move_towards_goal(self, x, y):
-            if self.agent.x < x:
-                self.agent.x += 1
-            elif self.agent.x > x:
-                self.agent.x -= 1
-
-            if self.agent.y < y:
-                self.agent.y += 1
-            elif self.agent.y > y:
-                self.agent.y -= 1
-
-            self.agent.energy -= self.agent.energy_waste
-            log_robots(f"Moved to ({self.agent.x},{self.agent.y})")
-
-            self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
 
     class WaterPlantsBehaviour(PeriodicBehaviour):
         async def run(self):
@@ -382,7 +398,12 @@ class RobotAgent(Agent):
 
         async def run(self):
             def message_handling(client, userdata, msg):
+                response = json.loads(msg.payload.decode())
+                self.x = response["x"]
+                self.y = response["y"]
+                self.agent.energy -= response["energy_waste"]
                 print(f"{msg.topic}: {msg.payload.decode()}")
+                self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
 
             self.agent.subscriber = paho.Client()
             self.agent.subscriber.on_message = message_handling
@@ -434,9 +455,6 @@ class RobotAgent(Agent):
 
         c = self.ReceiverBehaviour()
         self.add_behaviour(c)
-
-        d = self.MovementBehaviour(period=0.5, start_at=datetime.datetime.now())
-        self.add_behaviour(d)
 
         e = self.WaterPlantsBehaviour(period=0.5, start_at=datetime.datetime.now())
         self.add_behaviour(e)
