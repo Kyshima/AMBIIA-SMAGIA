@@ -14,7 +14,7 @@ def jid_to_string(jid):
     return f"{jid.localpart}@{jid.domain}"
 
 
-log = False
+log = True
 
 
 def log_robots(msg):
@@ -178,6 +178,7 @@ class RobotAgent(Agent):
                         "y": response['y'],
                     }
                     client = paho.Client()
+                    client.connect("localhost", 1883, 60)
                     client.publish("target_coordinates", json.dumps(data), 0)
                     client.disconnect()
 
@@ -383,23 +384,22 @@ class RobotAgent(Agent):
             def message_handling(client, userdata, msg):
                 print(f"{msg.topic}: {msg.payload.decode()}")
 
-            client = paho.Client()
-            client.on_message = message_handling
+            self.agent.subscriber = paho.Client()
+            self.agent.subscriber.on_message = message_handling
 
-            if client.connect("localhost", 1883, 60) != 0:
+            if self.agent.subscriber.connect("localhost", 1883, 60) != 0:
                 print("Couldn't connect to the mqtt broker")
                 self.agent.kill()
 
-            client.subscribe("Coordinates1")
+            self.agent.subscriber.subscribe("Coordinates1")
 
             try:
                 print("Connected")
-                client.loop_forever()
+                self.agent.subscriber.loop_start()
             except Exception:
                 print("Caught an Exception, something went wrong...")
             finally:
                 print("Disconnecting from the MQTT broker")
-                client.disconnect()
 
     def __init__(self, jid, password, max_energy, max_water, robot_id, base_x, base_y, water_potency, robot_network,
                  water_station_jid, energy_station_jid, energy_waste):
@@ -423,6 +423,7 @@ class RobotAgent(Agent):
         self.water_station_jid = water_station_jid
         self.energy_station_jid = energy_station_jid
         self.energy_waste = energy_waste
+        self.subscriber = None
 
     async def setup(self):
         log_robots(f"RobotAgent started at {datetime.datetime.now().time()}")
