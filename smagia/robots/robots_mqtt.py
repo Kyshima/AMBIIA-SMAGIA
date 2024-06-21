@@ -400,11 +400,11 @@ class RobotAgent(Agent):
         async def run(self):
             def message_handling(client, userdata, msg):
                 response = json.loads(msg.payload.decode())
-                self.x = response["x"]
-                self.y = response["y"]
+                self.agent.x = response["x"]
+                self.agent.y = response["y"]
                 self.agent.energy -= response["energy_waste"]
                 print(f"{msg.topic}: {msg.payload.decode()}")
-                self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
+                #self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
 
             self.agent.subscriber = paho.Client()
             self.agent.subscriber.on_message = message_handling
