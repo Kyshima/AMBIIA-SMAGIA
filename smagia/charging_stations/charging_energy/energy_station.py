@@ -44,9 +44,9 @@ class EnergyStationAgent(Agent):
                         }
 
                         print(self.agent.robots_list)
-                        
+
                     case "Energy Recharge Finished":
-                        
+
                         sender = jid_to_string(msg.sender)
                         print("The robot " + self.agent.robot_jid + " completed it's energy recharge")
                         self.agent.robot_jid = None
@@ -58,9 +58,9 @@ class EnergyStationAgent(Agent):
                         pos_x = response['robot_x']
                         pos_y = response['robot_y']
 
-               
+
                         if(pos_x == self.agent.station_x and pos_y == self.agent.station_y):
-          
+
                             self.agent.in_pos = True
 
                     case _:
@@ -93,7 +93,7 @@ class EnergyStationAgent(Agent):
                         response.set_metadata("type", "Energy Recharge Queue")
                         response.set_metadata("agent", "Energy Station")
                         response.body = "You are now in the waiting list"
-                  
+
                     await self.send(response)
 
     class RechargeBehaviour(PeriodicBehaviour):

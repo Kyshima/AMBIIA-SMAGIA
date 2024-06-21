@@ -22,7 +22,7 @@ import spade
 async def main():
     robot_network = ['robot1@jabbers.one', 'robot2@jabbers.one', 'robot3@jabbers.one', 'robot4@jabbers.one']
 
-    sensor_humidity1 = HumiditySensorAgent("sensor_humidity1@jabbers.one", "sensor_humidity1", 100, 5, "sensor1", 3, 7, robot_network)
+    sensor_humidity1 = HumiditySensorAgent("sensor_humidity1@jabbers.one", "sensor_humidity1", 71, 1, "sensor1", 3, 7, robot_network)
     sensor_humidity1.set("receiver_jid", "receiver@jabbers.one")
     await sensor_humidity1.start(auto_register=True)
 

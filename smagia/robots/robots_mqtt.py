@@ -1,3 +1,5 @@
+import sys
+import paho.mqtt.client as paho
 import datetime
 import json
 from spade.agent import Agent
@@ -6,7 +8,7 @@ from spade.message import Message
 import math
 
 
-#from utils.utils import jid_to_string, get_max_potency_jid
+# from utils.utils import jid_to_string, get_max_potency_jid
 
 def jid_to_string(jid):
     return f"{jid.localpart}@{jid.domain}"
@@ -142,6 +144,16 @@ class RobotAgent(Agent):
                     self.agent.task_y = self.agent.base_x
                     self.agent.task = "resting"
                     self.agent.taskSender = ""
+
+                    data = {
+                        "x": self.agent.base_x,
+                        "y": self.agent.base_y,
+                    }
+                    client = paho.Client()
+                    client.connect("localhost", 1883, 60)
+                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.disconnect()
+
                     self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
                     self.agent.add_behaviour(self.agent.RefillWaterBehaviour())
 
@@ -170,8 +182,17 @@ class RobotAgent(Agent):
                     self.agent.task_y = response["y"]
                     self.agent.task = "watering"
                     self.agent.taskSender = jid_to_string(msg.sender)
-                    log_robots(
-                        f"Received task for x:{self.agent.task_x},y:{self.agent.task_y} from {self.agent.taskSender}")
+
+                    data = {
+                        "x": response['x'],
+                        "y": response['y'],
+                    }
+                    client = paho.Client()
+                    client.connect("localhost", 1883, 60)
+                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.disconnect()
+
+                    log_robots(f"Received task for x:{self.agent.task_x},y:{self.agent.task_y} from {self.agent.taskSender}")
                 case _:
                     log_robots("Unknown type from sensor agent")
 
@@ -186,6 +207,15 @@ class RobotAgent(Agent):
                     self.agent.taskSender = jid_to_string(msg.sender)
                     print(f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
 
+                    data = {
+                        "x": response["water_station_x"],
+                        "y": response["water_station_y"],
+                    }
+                    client = paho.Client()
+                    client.connect("localhost", 1883, 60)
+                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.disconnect()
+
                 case "Water Refill":
                     self.agent.task = "refilling_water"
                     new_water = response["new_water"]
@@ -199,13 +229,22 @@ class RobotAgent(Agent):
                         self.agent.task = "resting"
                         self.agent.taskSender = ""
                         self.agent.task_x = self.agent.base_x
-                        self.agent.task_y = self.agent.base_x
+                        self.agent.task_y = self.agent.base_y
 
                         water_station = self.agent.water_station_jid
                         msg = Message(to=water_station)
                         msg.set_metadata("performative", "inform")
                         msg.set_metadata("type", "Water Refill Finished")
                         msg.set_metadata("agent", "Water Station")
+
+                        data = {
+                            "x": self.agent.base_x,
+                            "y": self.agent.base_y,
+                        }
+                        client = paho.Client()
+                        client.connect("localhost", 1883, 60)
+                        client.publish("target_coordinates", json.dumps(data), 0)
+                        client.disconnect()
 
                         await self.send(msg)
                         print(f"Water Refill Complete! Now at max water capacity of {self.agent.max_water}")
@@ -223,8 +262,16 @@ class RobotAgent(Agent):
                     self.agent.task_y = response["energy_station_y"]
                     self.agent.task = "going_recharge"
                     self.agent.taskSender = jid_to_string(msg.sender)
-                    print(
-                        f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
+
+                    data = {
+                        "x": response["energy_station_x"],
+                        "y": response["energy_station_y"],
+                    }
+                    client = paho.Client()
+                    client.connect("localhost", 1883, 60)
+                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.disconnect()
+                    print(f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
 
                 case "Energy Recharge":
                     self.agent.task = "recharging_energy"
@@ -247,6 +294,15 @@ class RobotAgent(Agent):
                         msg.set_metadata("type", "Energy Recharge Finished")
                         msg.set_metadata("agent", "Energy Station")
 
+                        data = {
+                            "x": self.agent.base_x,
+                            "y": self.agent.base_x,
+                        }
+                        client = paho.Client()
+                        client.connect("localhost", 1883, 60)
+                        client.publish("target_coordinates", json.dumps(data), 0)
+                        client.disconnect()
+
                         await self.send(msg)
                         print(f"Energy Recharge Complete! Now at max energy capacity of {self.agent.max_energy}")
                         self.agent.add_behaviour(self.agent.RefillWaterBehaviour())
@@ -254,37 +310,10 @@ class RobotAgent(Agent):
                 case "Energy Recharge Queue":
                     self.agent.task = "waiting_recharge"
 
-    class MovementBehaviour(PeriodicBehaviour):
-        async def run(self):
-            if self.agent.task == "resting":
-                if self.agent.x != self.agent.base_x or self.agent.y != self.agent.base_y:
-                    self.move_towards_goal(self.agent.base_x, self.agent.base_y)
-            else:
-                if self.agent.x != self.agent.task_x or self.agent.y != self.agent.task_y:
-                    self.move_towards_goal(self.agent.task_x, self.agent.task_y)
-
-        async def on_end(self):
-            await self.agent.stop()
-
-        def move_towards_goal(self, x, y):
-            if self.agent.x < x:
-                self.agent.x += 1
-            elif self.agent.x > x:
-                self.agent.x -= 1
-
-            if self.agent.y < y:
-                self.agent.y += 1
-            elif self.agent.y > y:
-                self.agent.y -= 1
-
-            self.agent.energy -= self.agent.energy_waste
-            log_robots(f"Moved to ({self.agent.x},{self.agent.y})")
-
-            self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
-
     class WaterPlantsBehaviour(PeriodicBehaviour):
         async def run(self):
-            if self.agent.task == "watering" and self.agent.x == self.agent.task_x and self.agent.y == self.agent.task_y:
+            if (self.agent.task == "watering" and -0.5 < self.agent.x - self.agent.task_x < 0.5
+                    and -0.5 < self.agent.y - self.agent.task_y < 0.5):
                 data = {
                     "water": self.agent.water_potency,
                 }
@@ -366,6 +395,34 @@ class RobotAgent(Agent):
 
                 await self.send(msg)
 
+    class MqttReceivePositionBehaviour(OneShotBehaviour):
+
+        async def run(self):
+            def message_handling(client, userdata, msg):
+                response = json.loads(msg.payload.decode())
+                self.x = response["x"]
+                self.y = response["y"]
+                self.agent.energy -= response["energy_waste"]
+                print(f"{msg.topic}: {msg.payload.decode()}")
+                self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
+
+            self.agent.subscriber = paho.Client()
+            self.agent.subscriber.on_message = message_handling
+
+            if self.agent.subscriber.connect("localhost", 1883, 60) != 0:
+                print("Couldn't connect to the mqtt broker")
+                self.agent.kill()
+
+            self.agent.subscriber.subscribe("Coordinates1")
+
+            try:
+                print("Connected")
+                self.agent.subscriber.loop_start()
+            except Exception:
+                print("Caught an Exception, something went wrong...")
+            finally:
+                print("Disconnecting from the MQTT broker")
+
     def __init__(self, jid, password, max_energy, max_water, robot_id, base_x, base_y, water_potency, robot_network,
                  water_station_jid, energy_station_jid, energy_waste):
         super().__init__(jid, password)
@@ -388,6 +445,7 @@ class RobotAgent(Agent):
         self.water_station_jid = water_station_jid
         self.energy_station_jid = energy_station_jid
         self.energy_waste = energy_waste
+        self.subscriber = None
 
     async def setup(self):
         log_robots(f"RobotAgent started at {datetime.datetime.now().time()}")
@@ -398,9 +456,6 @@ class RobotAgent(Agent):
 
         c = self.ReceiverBehaviour()
         self.add_behaviour(c)
-
-        d = self.MovementBehaviour(period=0.5, start_at=datetime.datetime.now())
-        self.add_behaviour(d)
 
         e = self.WaterPlantsBehaviour(period=0.5, start_at=datetime.datetime.now())
         self.add_behaviour(e)
@@ -413,3 +468,6 @@ class RobotAgent(Agent):
 
         h = self.RefillWaterBehaviour()
         self.add_behaviour(h)
+
+        i = self.MqttReceivePositionBehaviour()
+        self.add_behaviour(i)
