@@ -189,7 +189,7 @@ class RobotAgent(Agent):
                     }
                     client = paho.Client()
                     client.connect("localhost", 1883, 60)
-                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.publish("target_coordinates1", json.dumps(data), 0)
                     client.disconnect()
 
                     log_robots(f"Received task for x:{self.agent.task_x},y:{self.agent.task_y} from {self.agent.taskSender}")
@@ -346,7 +346,7 @@ class RobotAgent(Agent):
 
                 await self.send(msg)
 
-    class RechargeEnergyBehaviour(OneShotBehaviour):
+    class RechargeEnergyBehaviour(PeriodicBehaviour):
         async def run(self):
             min_energy = self.agent.max_energy * 0.35
             if self.agent.task == "resting" and self.agent.energy <= min_energy:
@@ -404,7 +404,6 @@ class RobotAgent(Agent):
                 self.agent.y = response["y"]
                 self.agent.energy -= response["energy_waste"]
                 print(f"{msg.topic}: {msg.payload.decode()}")
-                #self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
 
             self.agent.subscriber = paho.Client()
             self.agent.subscriber.on_message = message_handling
@@ -463,7 +462,7 @@ class RobotAgent(Agent):
         f = self.UpdatePosBehaviour(period=0.5)
         self.add_behaviour(f)
 
-        g = self.RechargeEnergyBehaviour()
+        g = self.RechargeEnergyBehaviour(period=0.5)
         self.add_behaviour(g)
 
         h = self.RefillWaterBehaviour()

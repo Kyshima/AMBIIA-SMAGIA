@@ -32,7 +32,7 @@ class EnergyStationAgent(Agent):
             msg = await self.receive(timeout=1000)
             if msg:
 
-                if(msg.body != None):
+                if msg.body is not None:
                     response = json.loads(msg.body)
 
                 match msg.get_metadata("type"):
@@ -59,7 +59,8 @@ class EnergyStationAgent(Agent):
                         pos_y = response['robot_y']
 
 
-                        if(pos_x == self.agent.station_x and pos_y == self.agent.station_y):
+                        if (-0.5 < pos_x - self.agent.station_x < 0.5
+                                and -0.5 < pos_y - self.agent.station_y < 0.5):
 
                             self.agent.in_pos = True
 
