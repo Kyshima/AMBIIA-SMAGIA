@@ -20,9 +20,8 @@ class RobotMover(Node):
             self.pointcloud_callback,
             10
         )
-        
-        self.target_x = -1.4  # Target x position
-        self.target_y = -4.4  # Target y position
+        self.target_x = 0.4  # Target x position
+        self.target_y = 4.4  # Target y position
         self.current_x = 0.0
         self.current_y = 0.0
         self.current_yaw = 0.0
@@ -77,7 +76,7 @@ class RobotMover(Node):
 
     def timer_callback(self):
         msg = Twist()
-        if self.obstacle_found == False:
+        if not self.obstacle_found:
             target_angle = math.atan2(self.target_y - self.current_y, self.target_x - self.current_x)
             angle_diff = target_angle - self.current_yaw
             self.get_logger().info(f'STATE: {self.state}')
@@ -99,7 +98,8 @@ class RobotMover(Node):
                 distance_y = (self.target_y - self.current_y) * math.sin(self.current_yaw)
                 distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
                 self.get_logger().info(f'Distance: {distance}, Distance X: {distance_x}, Distance Y: {distance_y}')
-                if distance > 0.6:
+                #if distance > 0.6:
+                if abs(self.target_x - self.current_x) > 0.6:
                     if distance_x > 0.3 or distance_y > 0.3:
                         msg.linear.x = 0.4
                         self.energy_waste = self.energy_waste + 0.3
@@ -108,7 +108,12 @@ class RobotMover(Node):
                     self.state = 'stop'
             elif self.state == 'stop':
                 if abs(angle_diff) > 0.1:
-                    msg.angular.z = 0.2 if angle_diff > 0 else -0.2
+                    msg.angular.z = 0.3 if angle_diff > 0 else -0.3
+                else:
+                    if abs(self.target_x - self.current_x) > 0.3:
+                        msg.linear.x = 0.4
+                    else:
+                        msg.linear.x = 0.0
                 self.get_logger().info(f'diff angle: {angle_diff}')
 
         data = {
