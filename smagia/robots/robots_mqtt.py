@@ -376,7 +376,20 @@ class RobotAgent(Agent):
 
                 await self.send(msg)
 
-    class RechargeEnergyBehaviour(PeriodicBehaviour):
+        async def run(self):
+            min_energy = self.agent.max_energy * 0.35
+            if self.agent.task == "resting" and self.agent.energy <= min_energy:
+                energy_station = self.agent.energy_station_jid
+                msg = Message(to=energy_station)
+                msg.set_metadata("performative", "request")
+                msg.set_metadata("type", "Energy Recharge Request")
+                msg.body = json.dumps({
+                    "energy": self.agent.energy
+                })
+
+                await self.send(msg)
+
+    class RechargeEnergyBehaviour(OneShotBehaviour):
         async def run(self):
             min_energy = self.agent.max_energy * 0.35
             if self.agent.task == "resting" and self.agent.energy <= min_energy:
@@ -493,7 +506,7 @@ class RobotAgent(Agent):
         f = self.UpdatePosBehaviour(period=0.5)
         self.add_behaviour(f)
 
-        g = self.RechargeEnergyBehaviour(period=0.5)
+        g = self.RechargeEnergyBehaviourPeriod(period=0.5)
         self.add_behaviour(g)
 
         h = self.RefillWaterBehaviour()
