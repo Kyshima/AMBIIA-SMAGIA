@@ -4,7 +4,7 @@ import spade
 async def main():
     jid = "energy_station@jabbers.one"
     password = "energy_station"
-    energy_station_agent = EnergyStationAgent(jid, password, 100, 0, 0)
+    energy_station_agent = EnergyStationAgent(jid, password, 100, -8.20, -7.00)
     
     await energy_station_agent.start(auto_register=True)
     print("Energy Station Agent Started")

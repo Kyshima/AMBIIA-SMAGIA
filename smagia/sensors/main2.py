@@ -1,4 +1,4 @@
-from sensors_network import HumiditySensorAgent
+from sensors_mqtt import HumiditySensorAgent
 import spade
 
 
@@ -6,7 +6,7 @@ import spade
 async def main():
     robot_network = ['robot1@jabbers.one', 'robot2@jabbers.one', 'robot3@jabbers.one', 'robot4@jabbers.one']
 
-    sensor_humidity2 = HumiditySensorAgent("sensor_humidity2@jabbers.one", "sensor_humidity2", 100, 5, "sensor1", 3, 7, robot_network)
+    sensor_humidity2 = HumiditySensorAgent("sensor_humidity2@jabbers.one", "sensor_humidity2", 71, 0.5, "sensor1", 0, 10, robot_network, "1")
     sensor_humidity2.set("receiver_jid", "receiver@jabbers.one")
     await sensor_humidity2.start(auto_register=True)
 

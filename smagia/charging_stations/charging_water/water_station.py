@@ -57,8 +57,8 @@ class WaterStationAgent(Agent):
                         pos_x = response['robot_x']
                         pos_y = response['robot_y']
 
-                        if (-0.5 < pos_x - self.agent.station_x < 0.5
-                                and -0.5 < pos_y - self.agent.station_y < 0.5):
+                        if (-1 < pos_x - self.agent.station_x < 1
+                                and -1 < pos_y - self.agent.station_y < 1):
 
                             self.agent.in_pos = True
 

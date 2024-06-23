@@ -5,9 +5,10 @@ from spade.behaviour import PeriodicBehaviour, CyclicBehaviour
 from spade.message import Message
 from datetime import datetime
 
-def jid_to_string(jid):
 
+def jid_to_string(jid):
     return f"{jid.localpart}@{jid.domain}"
+
 
 def get_robot(robots_list):
     best_sender = None
@@ -25,8 +26,8 @@ def get_robot(robots_list):
 
     return best_sender
 
-class EnergyStationAgent(Agent):
 
+class EnergyStationAgent(Agent):
     class ReceiverBehaviour(CyclicBehaviour):
         async def run(self):
             msg = await self.receive(timeout=1000)
@@ -40,7 +41,7 @@ class EnergyStationAgent(Agent):
                         sender = jid_to_string(msg.sender)
                         self.agent.robots_list[sender] = {
                             "energy": response['energy'],
-                            "waiting_time" : datetime.now()
+                            "waiting_time": datetime.now()
                         }
 
                         print(self.agent.robots_list)
@@ -58,10 +59,8 @@ class EnergyStationAgent(Agent):
                         pos_x = response['robot_x']
                         pos_y = response['robot_y']
 
-
-                        if (-0.5 < pos_x - self.agent.station_x < 0.5
-                                and -0.5 < pos_y - self.agent.station_y < 0.5):
-
+                        if (-1 < pos_x - self.agent.station_x < 1
+                                and 1 < pos_y - self.agent.station_y < 1):
                             self.agent.in_pos = True
 
                     case _:
@@ -73,7 +72,7 @@ class EnergyStationAgent(Agent):
 
     class ResponseBehaviour(PeriodicBehaviour):
         async def run(self):
-            if(self.agent.robot_jid == None):
+            if (self.agent.robot_jid == None):
 
                 robot = get_robot(self.agent.robots_list)
                 for sender in self.agent.robots_list.keys():
@@ -99,8 +98,7 @@ class EnergyStationAgent(Agent):
 
     class RechargeBehaviour(PeriodicBehaviour):
         async def run(self):
-            if(self.agent.robot_jid != None and self.agent.in_pos):
-
+            if (self.agent.robot_jid != None and self.agent.in_pos):
                 msg = Message(to=self.agent.robot_jid)
                 msg.set_metadata("performative", "inform")
                 msg.set_metadata("type", "Energy Recharge")
@@ -109,7 +107,6 @@ class EnergyStationAgent(Agent):
                     "new_energy": self.agent.energy
                 })
                 await self.send(msg)
-
 
     def __init__(self, jid, password, energy, station_x, station_y):
         super().__init__(jid, password)
@@ -125,8 +122,8 @@ class EnergyStationAgent(Agent):
         a = self.ReceiverBehaviour()
         self.add_behaviour(a)
 
-        b = self.ResponseBehaviour(period = 2)
+        b = self.ResponseBehaviour(period=2)
         self.add_behaviour(b)
 
-        c = self.RechargeBehaviour(period = 2)
+        c = self.RechargeBehaviour(period=2)
         self.add_behaviour(c)

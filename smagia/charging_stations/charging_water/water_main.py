@@ -5,8 +5,8 @@ async def main():
     jid = "water_station@jabbers.one"
     password = "water_station"
     refill_water_quantity = 100
-    water_station_posx = 5
-    water_station_posy = 5
+    water_station_posx = -8.31
+    water_station_posy = 8.17
     water_station_agent = WaterStationAgent(jid, password, refill_water_quantity, water_station_posx, water_station_posy)
     
     await water_station_agent.start(auto_register=True)

@@ -2,10 +2,10 @@ import datetime
 
 import json
 from typing import Optional
-
 import paho.mqtt.client as paho
+
 from spade.agent import Agent
-from spade.behaviour import PeriodicBehaviour, CyclicBehaviour
+from spade.behaviour import PeriodicBehaviour, CyclicBehaviour, OneShotBehaviour
 from spade.message import Message
 from utils.utils import jid_to_string
 
@@ -18,7 +18,6 @@ def log_sensor(msg):
 class HumiditySensorAgent(Agent):
     class InformBehaviour(PeriodicBehaviour):
         async def run(self):
-            self.agent.humidity = self.agent.humidity - self.agent.decrease_amount
             log_sensor(f"Sensor {self.agent.sensor_id} humidity: {self.agent.humidity}")
             if self.agent.humidityThreshold >= self.agent.humidity > 0:
                 if not self.agent.taskHanded:
@@ -71,17 +70,19 @@ class HumiditySensorAgent(Agent):
                     self.agent.humidity = self.agent.humidity + response["water"]
 
                     data = {
-                        "stop": self.agent.humidity >= 100,
+                        "water": response["water"],
                     }
 
-                    if self.agent.humidity >= 100:
-                        reply = msg.make_reply()
-                        reply.body = json.dumps(data)
-                        reply.set_metadata("performative", "cancel")
-                        reply.set_metadata("agent", "sensor")
-                        reply.set_metadata("type", "stop_watering")
-                        await self.send(reply)
-                        self.agent.taskHanded = False
+                    client = paho.Client()
+                    try:
+                        client.connect("localhost", 1883, 60)
+                        print("Connected")
+                        client.publish("Water" + self.agent.order, json.dumps(data), 0)
+                    except Exception:
+                        print("Caught an Exception, something went wrong...")
+                    finally:
+                        client.disconnect()
+
                 case "give_task":
                     self.agent.taskHanded = True
 
@@ -100,7 +101,41 @@ class HumiditySensorAgent(Agent):
                 case _:
                     log_sensor("Unknown type from robot agent")
 
-    def __init__(self, jid, password, humidity, decrease_amount, sensor_id, x, y, robots_network):
+        class MqttReceiveHumidity(OneShotBehaviour):
+
+            async def run(self):
+                async def message_handling(client, userdata, msg):
+                    response = json.loads(msg.payload.decode())
+                    self.agent.humidity = response["humidity"]
+                    print(f"{msg.topic}: {msg.payload.decode()}")
+
+                    if self.agent.humidity >= 100:
+                        reply = msg.make_reply()
+                        reply.body = json.dumps({"stop": True})
+                        reply.set_metadata("performative", "cancel")
+                        reply.set_metadata("agent", "sensor")
+                        reply.set_metadata("type", "stop_watering")
+                        await self.send(reply)
+                        self.agent.taskHanded = False
+
+                self.agent.subscriber = paho.Client()
+                self.agent.subscriber.on_message = message_handling
+
+                if self.agent.subscriber.connect("localhost", 1883, 60) != 0:
+                    print("Couldn't connect to the mqtt broker")
+                    self.agent.kill()
+
+                self.agent.subscriber.subscribe("UpdateSensor" + self.agent.order)
+
+                try:
+                    print("Connected")
+                    self.agent.subscriber.loop_start()
+                except Exception:
+                    print("Caught an Exception, something went wrong...")
+                finally:
+                    print("Disconnecting from the MQTT broker")
+
+    def __init__(self, jid, password, humidity, decrease_amount, sensor_id, x, y, robots_network, order):
         super().__init__(jid, password)
         self.sensor_id = sensor_id
         self.decrease_amount = decrease_amount
@@ -110,6 +145,7 @@ class HumiditySensorAgent(Agent):
         self.y = y
         self.taskHanded = False
         self.robots_network = robots_network
+        self.order = order
 
     async def setup(self):
         log_sensor(f"PeriodicSenderAgent started at {datetime.datetime.now().time()}")
