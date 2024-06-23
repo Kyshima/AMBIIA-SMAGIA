@@ -86,6 +86,7 @@ class HumiditySensorAgent(Agent):
 
                 case "give_task":
                     self.agent.taskHanded = True
+                    self.agent.agent = jid_to_string(msg.sender)
 
                     data = {
                         "humidity": self.agent.humidity,
@@ -105,19 +106,21 @@ class HumiditySensorAgent(Agent):
     class MqttReceiveHumidity(OneShotBehaviour):
 
         async def run(self):
-            async def message_handling(client, userdata, msg):
+            def message_handling(client, userdata, msg):
                 response = json.loads(msg.payload.decode())
                 self.agent.humidity = response["humidity"]
                 print(f"{msg.topic}: {msg.payload.decode()}")
 
                 if self.agent.humidity >= 100:
                     reply = msg.make_reply()
+                    reply = Message(to=self.agent.agent)
                     reply.body = json.dumps({"stop": True})
                     reply.set_metadata("performative", "cancel")
                     reply.set_metadata("agent", "sensor")
                     reply.set_metadata("type", "stop_watering")
-                    await self.send(reply)
+                    self.send(reply)
                     self.agent.taskHanded = False
+                    self.agent.agent = None
 
             self.agent.subscriber = paho.Client()
             self.agent.subscriber.on_message = message_handling
@@ -147,6 +150,7 @@ class HumiditySensorAgent(Agent):
         self.taskHanded = False
         self.robots_network = robots_network
         self.order = order
+        self.agent = None
 
     async def setup(self):
         log_sensor(f"PeriodicSenderAgent started at {datetime.datetime.now().time()}")
