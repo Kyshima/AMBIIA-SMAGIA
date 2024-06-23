@@ -151,7 +151,7 @@ class RobotAgent(Agent):
                     }
                     client = paho.Client()
                     client.connect("localhost", 1883, 60)
-                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
                     client.disconnect()
 
                     self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
@@ -189,7 +189,7 @@ class RobotAgent(Agent):
                     }
                     client = paho.Client()
                     client.connect("localhost", 1883, 60)
-                    client.publish("target_coordinates1", json.dumps(data), 0)
+                    client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
                     client.disconnect()
 
                     log_robots(f"Received task for x:{self.agent.task_x},y:{self.agent.task_y} from {self.agent.taskSender}")
@@ -213,7 +213,7 @@ class RobotAgent(Agent):
                     }
                     client = paho.Client()
                     client.connect("localhost", 1883, 60)
-                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
                     client.disconnect()
 
                 case "Water Refill":
@@ -243,7 +243,7 @@ class RobotAgent(Agent):
                         }
                         client = paho.Client()
                         client.connect("localhost", 1883, 60)
-                        client.publish("target_coordinates", json.dumps(data), 0)
+                        client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
                         client.disconnect()
 
                         await self.send(msg)
@@ -269,7 +269,7 @@ class RobotAgent(Agent):
                     }
                     client = paho.Client()
                     client.connect("localhost", 1883, 60)
-                    client.publish("target_coordinates", json.dumps(data), 0)
+                    client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
                     client.disconnect()
                     print(f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
 
@@ -300,7 +300,7 @@ class RobotAgent(Agent):
                         }
                         client = paho.Client()
                         client.connect("localhost", 1883, 60)
-                        client.publish("target_coordinates", json.dumps(data), 0)
+                        client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
                         client.disconnect()
 
                         await self.send(msg)
@@ -412,7 +412,7 @@ class RobotAgent(Agent):
                 print("Couldn't connect to the mqtt broker")
                 self.agent.kill()
 
-            self.agent.subscriber.subscribe("Coordinates1")
+            self.agent.subscriber.subscribe("Coordinates" + self.agent.order)
 
             try:
                 print("Connected")
@@ -423,7 +423,7 @@ class RobotAgent(Agent):
                 print("Disconnecting from the MQTT broker")
 
     def __init__(self, jid, password, max_energy, max_water, robot_id, base_x, base_y, water_potency, robot_network,
-                 water_station_jid, energy_station_jid, energy_waste):
+                 water_station_jid, energy_station_jid, energy_waste, order):
         super().__init__(jid, password)
         self.max_energy = max_energy
         self.energy = max_energy
@@ -445,6 +445,7 @@ class RobotAgent(Agent):
         self.energy_station_jid = energy_station_jid
         self.energy_waste = energy_waste
         self.subscriber = None
+        self.order = order
 
     async def setup(self):
         log_robots(f"RobotAgent started at {datetime.datetime.now().time()}")
