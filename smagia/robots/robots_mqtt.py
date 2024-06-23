@@ -376,6 +376,7 @@ class RobotAgent(Agent):
 
                 await self.send(msg)
 
+    class RechargeEnergyBehaviourPeriod(PeriodicBehaviour):
         async def run(self):
             min_energy = self.agent.max_energy * 0.35
             if self.agent.task == "resting" and self.agent.energy <= min_energy:
