@@ -8,17 +8,17 @@ import math
 
 class RobotMover(Node):
     def __init__(self):
-        super().__init__('robot_mover2')
-        self.publisher_ = self.create_publisher(Twist, '/robot2/cmd_vel', 10)
-        self.subscription = self.create_subscription(Odometry, '/robot2/odom', self.odom_callback, 10)
+        super().__init__('robot_mover4')
+        self.publisher_ = self.create_publisher(Twist, '/robot4/cmd_vel', 10)
+        self.subscription = self.create_subscription(Odometry, '/robot4/odom', self.odom_callback, 10)
         self.subscription = self.create_subscription(
             PointCloud2,
-            '/laser2/out',
+            '/laser4/out',
             self.pointcloud_callback,
             10
         )
-        self.target_x = 2.4  # Target x position
-        self.target_y = -4.5  # Target y position
+        self.target_x = -2.4  # Target x position
+        self.target_y = 4.5  # Target y position
         self.current_x = 0.0
         self.current_y = 0.0
         self.current_yaw = 0.0
@@ -93,7 +93,7 @@ class RobotMover(Node):
 
         if self.obstacle_found == True:
             self.publisher_.publish(msg1)
-
+        
 def main(args=None):
     rclpy.init(args=args)
     robot_mover = RobotMover()

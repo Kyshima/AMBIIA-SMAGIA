@@ -26,7 +26,9 @@ setup(
     entry_points={
         'console_scripts': [
             'control_node = plugins.control_node:main',
-            'humidity = plugins.humidity:main',
+            'control_node2 = plugins.control_node2:main',
+            'control_node3 = plugins.control_node3:main',
+            'control_node4 = plugins.control_node4:main'
         ],
     },
 )

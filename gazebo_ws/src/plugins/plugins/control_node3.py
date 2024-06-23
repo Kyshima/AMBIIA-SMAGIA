@@ -8,17 +8,17 @@ import math
 
 class RobotMover(Node):
     def __init__(self):
-        super().__init__('robot_mover2')
-        self.publisher_ = self.create_publisher(Twist, '/robot2/cmd_vel', 10)
-        self.subscription = self.create_subscription(Odometry, '/robot2/odom', self.odom_callback, 10)
+        super().__init__('robot_mover3')
+        self.publisher_ = self.create_publisher(Twist, '/robot3/cmd_vel', 10)
+        self.subscription = self.create_subscription(Odometry, '/robot3/odom', self.odom_callback, 10)
         self.subscription = self.create_subscription(
             PointCloud2,
-            '/laser2/out',
+            '/laser3/out',
             self.pointcloud_callback,
             10
         )
-        self.target_x = 2.4  # Target x position
-        self.target_y = -4.5  # Target y position
+        self.target_x = 3.4  # Target x position
+        self.target_y = 4.5  # Target y position
         self.current_x = 0.0
         self.current_y = 0.0
         self.current_yaw = 0.0
