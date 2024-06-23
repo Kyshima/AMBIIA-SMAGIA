@@ -1,14 +1,10 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-from geometry_msgs.msg import Point
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import PointCloud2
 import sensor_msgs_py.point_cloud2 as pc2
 import math
-import sys
-import paho.mqtt.client as mqtt
-import json
 
 class RobotMover(Node):
     def __init__(self):
@@ -17,55 +13,19 @@ class RobotMover(Node):
         self.subscription = self.create_subscription(Odometry, '/robot1/odom', self.odom_callback, 10)
         self.subscription = self.create_subscription(
             PointCloud2,
-            '/laser/out',
+            '/laser1/out',
             self.pointcloud_callback,
             10
         )
-        
-        self.target_x = -8.51252  # Target x position
-        self.target_y = 3.0034  # Target y position
+        self.target_x = -1.4  # Target x position
+        self.target_y = -4.4  # Target y position
         self.current_x = 0.0
         self.current_y = 0.0
         self.current_yaw = 0.0
         self.state = 'rotate'
+        self.obstacle_found = False
         self.timer_period = 0.5  # seconds
-        self.energy_waste = 0
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
-
-        # MQTT configuration
-        mqtt_broker = "172.18.133.108"
-        mqtt_port = 1883
-        self.mqtt_topic_command = "Coordinates1"
-        self.client = mqtt.Client()
-        self.client.connect(mqtt_broker, mqtt_port, 60)
-        
-        # MQTT configuration
-        mqtt_broker = "172.18.133.108"
-        mqtt_port = 1883
-        self.mqtt_topic_command2 = "target_coordinates"
-        self.client2 = mqtt.Client()
-        self.client2.on_connect = self.on_connect
-        self.client2.on_message = self.on_message
-        self.client2.connect(mqtt_broker, mqtt_port, 60)
-
-        # Start MQTT client loop in a separate thread
-        self.client2.loop_start()
-
-    def on_connect(self, client, userdata, flags, rc):
-        self.get_logger().info(f"Connected to MQTT broker with result code {rc}")
-        # Subscribe to MQTT topic for target coordinates
-        self.client2.subscribe(self.mqtt_topic_command2)
-
-    def on_message(self, client, userdata, msg):
-        self.get_logger().info("Received")
-        try:
-            payload = json.loads(msg.payload.decode())
-            self.target_x = payload["x"]
-            self.target_y = payload["y"]
-            self.get_logger().info(f"Received new target coordinates: ({self.target_x}, {self.target_y})")
-            self.state = 'move'
-        except json.JSONDecodeError as e:
-            self.get_logger().error(f"Error decoding MQTT message payload: {e}")
 
     def odom_callback(self, msg):
         self.current_x = msg.pose.pose.position.x
@@ -77,49 +37,44 @@ class RobotMover(Node):
 
     def timer_callback(self):
         msg = Twist()
-        target_angle = math.atan2(self.target_y - self.current_y, self.target_x - self.current_x)
-        angle_diff = target_angle - self.current_yaw
-        
-        if self.state == 'rotate':
-            if abs(angle_diff) > 0.1:
-                msg.angular.z = 0.3 if angle_diff > 0 else -0.3
-                self.energy_waste = self.energy_waste + 0.1
-            else:
-                msg.angular.z = 0.0
-                self.state = 'move'
-
-        elif self.state == 'move':
-            if not self.obstacle_found:
-                if abs(angle_diff) > 0.1:
-                    self.state = 'rotate'
-            # Calculate distance projection onto forward direction
-            distance_x = (self.target_x - self.current_x) * math.cos(self.current_yaw)
-            distance_y = (self.target_y - self.current_y) * math.sin(self.current_yaw)
-            distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
+        if self.obstacle_found == False:
+            target_angle = math.atan2(self.target_y - self.current_y, self.target_x - self.current_x)
+            angle_diff = target_angle - self.current_yaw
+            self.get_logger().info(f'STATE: {self.state}')
+            if self.state == 'rotate':
             
-            if distance > 0.3:
-                if distance_x > 0.3 or distance_y > 0.3:
-                    msg.linear.x = 0.4
-                    self.energy_waste = self.energy_waste + 0.3
-            else:
-                msg.linear.x = 0.0
-                self.state = 'stop'
+                if abs(angle_diff) > 0.1:
+                    msg.angular.z = 0.3 if angle_diff > 0 else -0.3
+                else:
+                    msg.angular.z = 0.0
+                    self.state = 'move'
 
-        data = {
-            "availability": self.state,
-            "x": self.current_x,
-            "y": self.current_y,
-            "energy_waste": self.energy_waste
-        }
-        msgMqtt = json.dumps(data)
-        self.publisher_.publish(msg)
-        #self.get_logger().info(f'Current state: {self.state}, Current position: ({self.current_x}, {self.current_y}), Velocity: ({msg.linear.x}), goal: ({self.target_x}, {self.target_y})')
-        self.client.publish(self.mqtt_topic_command, msgMqtt,0)
-        self.energy_waste = 0
+            elif self.state == 'move':
+                if not self.obstacle_found:
+                    if abs(angle_diff) > 0.1:
+                        self.state = 'rotate'
+                # Calculate distance projection onto forward direction
+                distance_x = (self.target_x - self.current_x) * math.cos(self.current_yaw)
+                distance_y = (self.target_y - self.current_y) * math.sin(self.current_yaw)
+                distance = math.sqrt(distance_x ** 2 + distance_y ** 2)
+                self.get_logger().info(f'Distance: {distance}, Distance X: {distance_x}, Distance Y: {distance_y}')
+                if distance > 0.6:
+                    if distance_x > 0.3 or distance_y > 0.3:
+                        msg.linear.x = 0.4
+                else:
+                    msg.linear.x = 0.0
+                    self.state = 'stop'
+            elif self.state == 'stop':
+                if abs(angle_diff) > 0.1:
+                    msg.angular.z = 0.2 if angle_diff > 0 else -0.2
+                self.get_logger().info(f'diff angle: {angle_diff}')
+
+            self.publisher_.publish(msg)
+            self.get_logger().info(f'Current state: {self.state}, Current position: ({self.current_x}, {self.current_y}), Velocity: ({msg.linear.x})')
 
     def pointcloud_callback(self, msg):
-        msg1 = Twist()
         self.obstacle_found = False
+        msg1 = Twist()
         for point in pc2.read_points(msg, skip_nans=True):
             angle = (math.atan2(point[1], point[0]))*180/math.pi
             dist = math.sqrt( (point[0]*point[0]) + (point[1]*point[1]) )
@@ -127,21 +82,18 @@ class RobotMover(Node):
             if dist < 1.0 and self.state != 'stop':
                 self.obstacle_found = True
                 self.state = 'obstacle'
-                if angle < 0 and angle > -45.0:
+                if angle <= 0:
                     msg1.angular.z = 0.3
-                elif angle > 0 and angle < 45.0:
-                    msg1.angular.z = -0.3
                 else:
-                    msg1.angular.z = 0.0
-                
+                    msg1.angular.z = -0.3
+                print(f'Received a point with an angle of {angle} and distance {dist} and state {self.state}')
+                break
+            elif self.state != 'stop':
+                self.state = 'move'
 
-            print(f'Received a point with an angle of {angle} and distance {dist}')
-        if self.state == 'obstacle':
+        if self.obstacle_found == True:
             self.publisher_.publish(msg1)
-
         
-            
-
 def main(args=None):
     rclpy.init(args=args)
     robot_mover = RobotMover()
