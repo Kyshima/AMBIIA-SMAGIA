@@ -150,9 +150,14 @@ class RobotAgent(Agent):
                         "y": self.agent.base_y,
                     }
                     client = paho.Client()
-                    client.connect("localhost", 1883, 60)
-                    client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
-                    client.disconnect()
+                    try:
+                        client.connect("localhost", 1883, 60)
+                        print("Connected")
+                        client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
+                    except Exception:
+                        print("Caught an Exception, something went wrong...")
+                    finally:
+                        client.disconnect()
 
                     self.agent.add_behaviour(self.agent.RechargeEnergyBehaviour())
                     self.agent.add_behaviour(self.agent.RefillWaterBehaviour())
@@ -188,9 +193,14 @@ class RobotAgent(Agent):
                         "y": response['y'],
                     }
                     client = paho.Client()
-                    client.connect("localhost", 1883, 60)
-                    client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
-                    client.disconnect()
+                    try:
+                        client.connect("localhost", 1883, 60)
+                        print("Connected")
+                        client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
+                    except Exception:
+                        print("Caught an Exception, something went wrong...")
+                    finally:
+                        client.disconnect()
 
                     log_robots(f"Received task for x:{self.agent.task_x},y:{self.agent.task_y} from {self.agent.taskSender}")
                 case _:
@@ -212,9 +222,14 @@ class RobotAgent(Agent):
                         "y": response["water_station_y"],
                     }
                     client = paho.Client()
-                    client.connect("localhost", 1883, 60)
-                    client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
-                    client.disconnect()
+                    try:
+                        client.connect("localhost", 1883, 60)
+                        print("Connected")
+                        client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
+                    except Exception:
+                        print("Caught an Exception, something went wrong...")
+                    finally:
+                        client.disconnect()
 
                 case "Water Refill":
                     self.agent.task = "refilling_water"
@@ -242,9 +257,14 @@ class RobotAgent(Agent):
                             "y": self.agent.base_y,
                         }
                         client = paho.Client()
-                        client.connect("localhost", 1883, 60)
-                        client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
-                        client.disconnect()
+                        try:
+                            client.connect("localhost", 1883, 60)
+                            print("Connected")
+                            client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
+                        except Exception:
+                            print("Caught an Exception, something went wrong...")
+                        finally:
+                            client.disconnect()
 
                         await self.send(msg)
                         print(f"Water Refill Complete! Now at max water capacity of {self.agent.max_water}")
@@ -268,9 +288,14 @@ class RobotAgent(Agent):
                         "y": response["energy_station_y"],
                     }
                     client = paho.Client()
-                    client.connect("localhost", 1883, 60)
-                    client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
-                    client.disconnect()
+                    try:
+                        client.connect("localhost", 1883, 60)
+                        print("Connected")
+                        client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
+                    except Exception:
+                        print("Caught an Exception, something went wrong...")
+                    finally:
+                        client.disconnect()
                     print(f"Received task for x:{self.agent.task_x}, y:{self.agent.task_y} from {self.agent.taskSender}")
 
                 case "Energy Recharge":
@@ -299,9 +324,14 @@ class RobotAgent(Agent):
                             "y": self.agent.base_x,
                         }
                         client = paho.Client()
-                        client.connect("localhost", 1883, 60)
-                        client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
-                        client.disconnect()
+                        try:
+                            client.connect("localhost", 1883, 60)
+                            print("Connected")
+                            client.publish("target_coordinates" + self.agent.order, json.dumps(data), 0)
+                        except Exception:
+                            print("Caught an Exception, something went wrong...")
+                        finally:
+                            client.disconnect()
 
                         await self.send(msg)
                         print(f"Energy Recharge Complete! Now at max energy capacity of {self.agent.max_energy}")
