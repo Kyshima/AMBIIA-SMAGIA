@@ -112,7 +112,6 @@ class HumiditySensorAgent(Agent):
                 print(f"{msg.topic}: {msg.payload.decode()}")
 
                 if self.agent.humidity >= 100:
-                    reply = msg.make_reply()
                     reply = Message(to=self.agent.agent)
                     reply.body = json.dumps({"stop": True})
                     reply.set_metadata("performative", "cancel")
