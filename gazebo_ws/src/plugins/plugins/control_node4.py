@@ -5,6 +5,10 @@ from nav_msgs.msg import Odometry
 from sensor_msgs.msg import PointCloud2
 import sensor_msgs_py.point_cloud2 as pc2
 import math
+import sys
+import paho.mqtt.client as mqtt
+import json
+
 
 class RobotMover(Node):
     def __init__(self):
@@ -25,7 +29,43 @@ class RobotMover(Node):
         self.state = 'rotate'
         self.obstacle_found = False
         self.timer_period = 0.5  # seconds
+        self.energy_waste = 0
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
+
+        # MQTT configuration
+        mqtt_broker = "172.18.133.108"
+        mqtt_port = 1883
+        self.mqtt_topic_command = "Coordinates4"
+        self.client = mqtt.Client()
+        self.client.connect(mqtt_broker, mqtt_port, 60)
+        
+        # MQTT configuration
+        mqtt_broker = "172.18.133.108"
+        mqtt_port = 1883
+        self.mqtt_topic_command2 = "target_coordinates"
+        self.client2 = mqtt.Client()
+        self.client2.on_connect = self.on_connect
+        self.client2.on_message = self.on_message
+        self.client2.connect(mqtt_broker, mqtt_port, 60)
+
+        # Start MQTT client loop in a separate thread
+        self.client2.loop_start()
+
+    def on_connect(self, client, userdata, flags, rc):
+        self.get_logger().info(f"Connected to MQTT broker with result code {rc}")
+        # Subscribe to MQTT topic for target coordinates
+        self.client2.subscribe(self.mqtt_topic_command2)
+
+    def on_message(self, client, userdata, msg):
+        self.get_logger().info("Received")
+        try:
+            payload = json.loads(msg.payload.decode())
+            self.target_x = payload["x"]
+            self.target_y = payload["y"]
+            self.get_logger().info(f"Received new target coordinates: ({self.target_x}, {self.target_y})")
+            self.state = 'move'
+        except json.JSONDecodeError as e:
+            self.get_logger().error(f"Error decoding MQTT message payload: {e}")
 
     def odom_callback(self, msg):
         self.current_x = msg.pose.pose.position.x
@@ -45,6 +85,7 @@ class RobotMover(Node):
             
                 if abs(angle_diff) > 0.1:
                     msg.angular.z = 0.3 if angle_diff > 0 else -0.3
+                    self.energy_waste = self.energy_waste + 0.1
                 else:
                     msg.angular.z = 0.0
                     self.state = 'move'
@@ -61,6 +102,7 @@ class RobotMover(Node):
                 if distance > 0.6:
                     if distance_x > 0.3 or distance_y > 0.3:
                         msg.linear.x = 0.4
+                        self.energy_waste = self.energy_waste + 0.3
                 else:
                     msg.linear.x = 0.0
                     self.state = 'stop'
@@ -69,8 +111,17 @@ class RobotMover(Node):
                     msg.angular.z = 0.2 if angle_diff > 0 else -0.2
                 self.get_logger().info(f'diff angle: {angle_diff}')
 
-            self.publisher_.publish(msg)
-            self.get_logger().info(f'Current state: {self.state}, Current position: ({self.current_x}, {self.current_y}), Velocity: ({msg.linear.x})')
+        data = {
+            "availability": self.state,
+            "x": self.current_x,
+            "y": self.current_y,
+            "energy_waste": self.energy_waste
+        }
+        msgMqtt = json.dumps(data)
+        self.publisher_.publish(msg)
+        #self.get_logger().info(f'Current state: {self.state}, Current position: ({self.current_x}, {self.current_y}), Velocity: ({msg.linear.x}), goal: ({self.target_x}, {self.target_y})')
+        self.client.publish(self.mqtt_topic_command, msgMqtt,0)
+        self.energy_waste = 0
 
     def pointcloud_callback(self, msg):
         self.obstacle_found = False
