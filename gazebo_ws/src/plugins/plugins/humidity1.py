@@ -6,7 +6,7 @@ import json
 
 TIMER = 1.0
 RANDS = 1.5
-SENSOR = 1
+SENSOR = "1"
 
 
 class HumidityUpdater(Node):
@@ -18,10 +18,10 @@ class HumidityUpdater(Node):
 
         mqtt_broker = "127.0.0.1"
         mqtt_port = 1883
-        self.client = mqtt.Client()
-        self.client.on_connect = self.on_connect
-        self.client.on_message = self.on_message
-        self.client.connect(mqtt_broker, mqtt_port, 60)
+        self.client2 = mqtt.Client()
+        self.client2.on_connect = self.on_connect
+        self.client2.on_message = self.on_message
+        self.client2.connect(mqtt_broker, mqtt_port, 60)
 
         # Start MQTT client loop in a separate thread
         self.client2.loop_start()
@@ -29,7 +29,7 @@ class HumidityUpdater(Node):
     def on_connect(self, client, userdata, flags, rc):
         self.get_logger().info(f"Connected to MQTT broker with result code {rc}")
         # Subscribe to MQTT topic for target coordinates
-        self.client2.subscribe("Water1")
+        self.client2.subscribe("Water" + SENSOR)
 
     def on_message(self, client, userdata, msg):
         try:
@@ -49,7 +49,7 @@ class HumidityUpdater(Node):
 
         mqtt_broker = "127.0.0.1"
         mqtt_port = 1883
-        mqtt_topic_command = "UpdateSensor1"
+        mqtt_topic_command = "UpdateSensor"  + SENSOR
         client = mqtt.Client()
         client.connect(mqtt_broker, mqtt_port, 60)
 
@@ -58,8 +58,8 @@ class HumidityUpdater(Node):
         }
         msg_mqtt = json.dumps(data)
 
-        self.client.publish(mqtt_topic_command, msg_mqtt, 0)
-        self.get_logger().info(f'update sent')
+        client.publish(mqtt_topic_command, msg_mqtt, 0)
+        self.get_logger().info(f'Humidity: {self.humidity,}')
 
 
 def main(args=None):
