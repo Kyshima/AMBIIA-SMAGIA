@@ -111,16 +111,6 @@ class HumiditySensorAgent(Agent):
                 self.agent.humidity = response["humidity"]
                 print(f"{msg.topic}: {msg.payload.decode()}")
 
-                if self.agent.humidity >= 100:
-                    reply = Message(to=self.agent.agent)
-                    reply.body = json.dumps({"stop": True})
-                    reply.set_metadata("performative", "cancel")
-                    reply.set_metadata("agent", "sensor")
-                    reply.set_metadata("type", "stop_watering")
-                    self.send(reply)
-                    self.agent.taskHanded = False
-                    self.agent.agent = None
-
             self.agent.subscriber = paho.Client()
             self.agent.subscriber.on_message = message_handling
 
@@ -137,6 +127,18 @@ class HumiditySensorAgent(Agent):
                 print("Caught an Exception, something went wrong...")
             finally:
                 print("Disconnecting from the MQTT broker")
+
+    class StopRechargingBehaviour(PeriodicBehaviour):
+        async def run(self):
+            if self.agent.humidity >= 100 and self.agent.taskHanded:
+                reply = Message(to=self.agent.agent)
+                reply.body = json.dumps({"stop": True})
+                reply.set_metadata("performative", "cancel")
+                reply.set_metadata("agent", "sensor")
+                reply.set_metadata("type", "stop_watering")
+                await self.send(reply)
+                self.agent.taskHanded = False
+                self.agent.agent = None
 
     def __init__(self, jid, password, humidity, decrease_amount, sensor_id, x, y, robots_network, order):
         super().__init__(jid, password)
@@ -162,3 +164,6 @@ class HumiditySensorAgent(Agent):
 
         c = self.MqttReceiveHumidity()
         self.add_behaviour(c)
+
+        d = self.StopRechargingBehaviour(period=0.5)
+        self.add_behaviour(d)
