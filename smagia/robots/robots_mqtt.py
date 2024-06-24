@@ -321,7 +321,7 @@ class RobotAgent(Agent):
 
                         data = {
                             "x": self.agent.base_x,
-                            "y": self.agent.base_x,
+                            "y": self.agent.base_y,
                         }
                         client = paho.Client()
                         try:

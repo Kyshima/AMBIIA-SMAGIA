@@ -60,7 +60,7 @@ class EnergyStationAgent(Agent):
                         pos_y = response['robot_y']
 
                         if (-1 < pos_x - self.agent.station_x < 1
-                                and 1 < pos_y - self.agent.station_y < 1):
+                                and -1 < pos_y - self.agent.station_y < 1):
                             self.agent.in_pos = True
 
                     case _:

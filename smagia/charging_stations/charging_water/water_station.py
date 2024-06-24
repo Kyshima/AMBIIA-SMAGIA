@@ -44,7 +44,7 @@ class WaterStationAgent(Agent):
                         }
 
                         print(f"I got a water refill request. This is now my queue {self.agent.robots_list.keys()}")
-      
+
                     case "Water Refill Finished":
                         sender = jid_to_string(msg.sender)
                         print("The robot " + self.agent.robot_jid + " completed it's water refill")
@@ -92,7 +92,7 @@ class WaterStationAgent(Agent):
                         response.set_metadata("type", "Water Refill Queue")
                         response.set_metadata("agent", "Water Station")
                         response.body = "You are now in the waiting list"
-                  
+
                     await self.send(response)
 
     class RefillBehaviour(PeriodicBehaviour):
