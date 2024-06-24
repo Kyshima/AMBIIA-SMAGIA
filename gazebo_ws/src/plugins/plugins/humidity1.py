@@ -5,14 +5,14 @@ import paho.mqtt.client as mqtt
 import json
 
 TIMER = 1.0
-RANDS = 1.5
+RANDS = 0.5
 SENSOR = "1"
 
 
 class HumidityUpdater(Node):
     def __init__(self):
         super().__init__('humidity_updater')
-        self.humidity = random.uniform(80, 100)
+        self.humidity = 72
         self.timer_period = TIMER
         self.timer = self.create_timer(self.timer_period, self.timer_callback)
 
@@ -42,7 +42,7 @@ class HumidityUpdater(Node):
         except json.JSONDecodeError as e:
             self.get_logger().error(f"Error decoding MQTT message payload: {e}")
     def timer_callback(self):
-        humidity_loss = random.uniform(0.01, RANDS)
+        humidity_loss = random.uniform(0.1, RANDS)
 
         # Updating humidity values
         self.humidity -= humidity_loss

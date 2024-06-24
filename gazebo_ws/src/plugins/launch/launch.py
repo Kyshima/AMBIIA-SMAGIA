@@ -6,33 +6,29 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     package_dir = get_package_share_directory('plugins')
-    world_file = os.path.join(package_dir, 'worlds', 'teste.world')
-
-    # Launch Gazebo with the specified world file
-    gazebo_node = ExecuteProcess(
-        cmd=['gazebo', '--verbose', world_file, '-s', 'libgazebo_ros_factory.so'],
-        output='screen'
-    )
-
-    model_path = os.path.join(package_dir, 'models')
-
-    # Spawn the Prius Hybrid model in Gazebo
-    spawn_node = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        arguments=['-entity', 'robot', '-file', os.path.join(package_dir, 'models', 'robot', 'robot.urdf')],
-        output='screen'
-    )
-
-    # Example node to publish commands to the car
-    cmd_publisher_node = Node(
-        package='plugins',
-        executable='control_node',  # Seu nó que publica comandos
-        output='screen'
-    )
+    map_dir = os.path.join(bringup_dir, 'maps', 'turtlebot3_world.yaml')  # Use your map or an empty map
+    
+    param_file = os.path.join(bringup_dir, 'params', 'nav2_params.yaml')
+    rviz_config_file = os.path.join(bringup_dir, 'rviz', 'nav2_default_view.rviz')
 
     return LaunchDescription([
-        gazebo_node,
-        spawn_node,
-        cmd_publisher_node
+        Node(
+            package='nav2_bringup',
+            executable='bringup_launch',
+            name='nav2_bringup',
+            output='screen',
+            parameters=[
+                {'use_sim_time': True},
+                {'yaml_filename': map_dir},
+                param_file
+            ],
+            arguments=['--params-file', param_file]
+        ),
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz2',
+            output='screen',
+            arguments=['-d', rviz_config_file]
+        )
     ])

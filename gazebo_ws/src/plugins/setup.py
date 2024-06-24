@@ -28,7 +28,8 @@ setup(
             'control_node = plugins.control_node:main',
             'control_node2 = plugins.control_node2:main',
             'control_node3 = plugins.control_node3:main',
-            'control_node4 = plugins.control_node4:main'
+            'control_node4 = plugins.control_node4:main',
+            'humidity1 = plugins.humidity1:main'
         ],
     },
 )
