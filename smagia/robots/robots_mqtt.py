@@ -24,7 +24,7 @@ def log_robots(msg):
 
 def get_max_potency_jid_network(robot, task_x, task_y):
     robots_dict = robot.robots_availability.copy()
-    robots_dict[robot.jid] = {
+    robots_dict[jid_to_string(robot.jid)] = {
         "potency": robot.water_potency,
         "availability": robot.task == "resting",
         "x": robot.x,
@@ -49,6 +49,11 @@ def get_max_potency_jid_network(robot, task_x, task_y):
     max_water = max(info["water"] for info in filtered_robots.values())
     max_energy = max(info["energy"] for info in filtered_robots.values())
 
+    if max_energy == 0:
+        max_energy = 1
+    if max_energy == 0:
+        max_energy = 1
+
     # Find the robot with the highest combined normalized score of water and energy
     max_score_robot = max(
         filtered_robots.items(),
@@ -63,7 +68,7 @@ def get_energy_estimate(robot, task_x, task_y):
     energy = distance * robot["energy_waste"] * 2
     return energy
 
-
+1
 class RobotAgent(Agent):
     class UpdateNetworkBehaviour(PeriodicBehaviour):
         async def run(self):
@@ -121,7 +126,7 @@ class RobotAgent(Agent):
             match msg.get_metadata("type"):
                 case "update":
                     sender = jid_to_string(msg.sender)
-                    self.agent.robots_availability[msg.sender] = {
+                    self.agent.robots_availability[sender] = {
                         "potency": response['potency'],
                         "availability": response['availability'],
                         "x": response['x'],
