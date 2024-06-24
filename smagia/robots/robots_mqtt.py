@@ -171,7 +171,6 @@ class RobotAgent(Agent):
                     robot = get_max_potency_jid_network(self.agent, response['x'], response['y'])
                     if robot is None:
                         return
-                    robot = jid_to_string(robot)
                     if robot == jid_to_string(self.agent.jid):
                         data = {
                             "x": response['x'],
