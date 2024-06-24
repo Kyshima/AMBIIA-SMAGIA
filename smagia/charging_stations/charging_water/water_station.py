@@ -100,7 +100,7 @@ class WaterStationAgent(Agent):
             if(self.agent.robot_jid != None and self.agent.in_pos):
 
                 msg = Message(to=self.agent.robot_jid)
-                msg.set_metadata("performative", "inform")
+                msg.set_metadata("performative", "update")
                 msg.set_metadata("type", "Water Refill")
                 msg.set_metadata("agent", "Water Station")
                 msg.body = json.dumps({
