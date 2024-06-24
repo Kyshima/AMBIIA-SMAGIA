@@ -100,7 +100,7 @@ class EnergyStationAgent(Agent):
         async def run(self):
             if (self.agent.robot_jid != None and self.agent.in_pos):
                 msg = Message(to=self.agent.robot_jid)
-                msg.set_metadata("performative", "inform")
+                msg.set_metadata("performative", "update")
                 msg.set_metadata("type", "Energy Recharge")
                 msg.set_metadata("agent", "Energy Station")
                 msg.body = json.dumps({

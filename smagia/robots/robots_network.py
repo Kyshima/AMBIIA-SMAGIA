@@ -78,7 +78,7 @@ class RobotAgent(Agent):
 
             for robot in self.agent.robot_network:
                 msg = Message(to=robot)
-                msg.set_metadata("performative", "accept-proposal")
+                msg.set_metadata("performative", "inform")
                 msg.set_metadata("agent", "robot")
                 msg.set_metadata("type", "update")
                 msg.body = json.dumps(data)
@@ -203,7 +203,7 @@ class RobotAgent(Agent):
 
                         water_station = self.agent.water_station_jid
                         msg = Message(to=water_station)
-                        msg.set_metadata("performative", "inform")
+                        msg.set_metadata("performative", "cancel")
                         msg.set_metadata("type", "Water Refill Finished")
                         msg.set_metadata("agent", "Water Station")
 
@@ -243,7 +243,7 @@ class RobotAgent(Agent):
 
                         energy_station = self.agent.energy_station_jid
                         msg = Message(to=energy_station)
-                        msg.set_metadata("performative", "inform")
+                        msg.set_metadata("performative", "cancel")
                         msg.set_metadata("type", "Energy Recharge Finished")
                         msg.set_metadata("agent", "Energy Station")
 
